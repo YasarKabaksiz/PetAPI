@@ -84,6 +84,8 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<PetAPI.Interfaces.IPetService, PetAPI.Services.PetService>();
 
+builder.Services.AddHostedService<PetAPI.BackgroundServices.PetStatsUpdaterService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
