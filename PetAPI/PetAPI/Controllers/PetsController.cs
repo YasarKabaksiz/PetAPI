@@ -4,6 +4,8 @@ using PetAPI.Dtos.Pet;
 using PetAPI.Entities;
 using PetAPI.Interfaces;
 using System.Security.Claims;
+using PetAPI.Dtos;
+using System.Text.Json;
 
 namespace PetAPI.Controllers
 {
@@ -125,6 +127,26 @@ namespace PetAPI.Controllers
             }
 
             return Ok(pet);
+        }
+
+        /// <summary>
+        /// Evcil hayvanların liderlik tablosunu getirir (kimlik doğrulama gerekmez)
+        /// </summary>
+        /// <param name="paginationParams">Sayfalama parametreleri</param>
+        /// <returns>Mutluluk ve sağlık değerlerine göre sıralanmış evcil hayvan listesi</returns>
+        /// <response code="200">Liderlik tablosu başarıyla getirildi</response>
+        /// <response code="400">Geçersiz sayfalama parametreleri</response>
+        [HttpGet("leaderboard")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetLeaderboard([FromQuery] PaginationParams paginationParams)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var pets = await _petService.GetLeaderboardAsync(paginationParams);
+            return Ok(pets);
         }
     }
 } 

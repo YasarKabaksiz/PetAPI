@@ -3,6 +3,7 @@ using PetAPI.Dtos.Pet;
 using PetAPI.Entities;
 using PetAPI.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using PetAPI.Dtos;
 
 namespace PetAPI.Services
 {
@@ -58,6 +59,17 @@ namespace PetAPI.Services
             await _context.SaveChangesAsync();
             
             return pet;
+        }
+
+        public async Task<IEnumerable<Pet>> GetLeaderboardAsync(PaginationParams paginationParams)
+        {
+            return await _context.Pets
+                .AsNoTracking()
+                .OrderByDescending(p => p.Happiness)
+                .ThenByDescending(p => p.Health)
+                .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+                .Take(paginationParams.PageSize)
+                .ToListAsync();
         }
     }
 } 
