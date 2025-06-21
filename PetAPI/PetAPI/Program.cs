@@ -54,6 +54,11 @@ builder.Services.AddSwaggerGen(options =>
     };
 
     options.AddSecurityRequirement(securityRequirement);
+
+    // XML documentation file'ını ekle
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 });
 
 // Entity Framework Core servislerini ekle

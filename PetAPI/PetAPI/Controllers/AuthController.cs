@@ -11,6 +11,9 @@ using System.Text;
 
 namespace PetAPI.Controllers
 {
+    /// <summary>
+    /// Kimlik doğrulama işlemleri için controller
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
@@ -29,7 +32,13 @@ namespace PetAPI.Controllers
         /// </summary>
         /// <param name="registerDto">Kullanıcı kayıt bilgileri</param>
         /// <returns>Kayıt işlemi sonucu</returns>
+        /// <response code="200">Kullanıcı başarıyla oluşturuldu</response>
+        /// <response code="400">Geçersiz veri veya kullanıcı adı zaten alınmış</response>
+        /// <response code="500">Sunucu hatası</response>
         [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto registerDto)
         {
             try
@@ -72,8 +81,14 @@ namespace PetAPI.Controllers
         /// Kullanıcı girişi yapar ve JWT döndürür
         /// </summary>
         /// <param name="loginDto">Kullanıcı giriş bilgileri</param>
-        /// <returns>JWT veya hata mesajı</returns>
+        /// <returns>JWT token veya hata mesajı</returns>
+        /// <response code="200">Giriş başarılı, JWT token döndürülür</response>
+        /// <response code="401">Geçersiz kullanıcı adı veya şifre</response>
+        /// <response code="500">Sunucu hatası</response>
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Login([FromBody] UserLoginDto loginDto)
         {
             try
