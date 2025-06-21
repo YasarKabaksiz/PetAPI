@@ -16,5 +16,8 @@ namespace PetAPI.Entities
         [Required]
         [StringLength(20)]
         public string Role { get; set; } = "User";
+
+        // Navigation property: Kullanıcının evcil hayvanları
+        public ICollection<Pet> Pets { get; set; } = new List<Pet>();
     }
 } 
