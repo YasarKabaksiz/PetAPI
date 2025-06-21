@@ -7,5 +7,6 @@ namespace PetAPI.Interfaces
     public interface IPetService
     {
         Task<Pet> CreatePetAsync(PetCreateDto petDto, int userId);
+        Task<Pet?> GetPetByUserIdAsync(int userId);
     }
 } 

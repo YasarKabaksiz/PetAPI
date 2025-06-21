@@ -31,5 +31,22 @@ namespace PetAPI.Controllers
             var pet = await _petService.CreatePetAsync(petDto, userId);
             return CreatedAtAction(nameof(CreatePet), new { id = pet.Id }, pet);
         }
+
+        [HttpGet("mypet")]
+        public async Task<IActionResult> GetMyPet()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst(ClaimTypes.Name);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized("Kullanıcı kimliği bulunamadı.");
+
+            var pet = await _petService.GetPetByUserIdAsync(userId);
+
+            if (pet == null)
+            {
+                return NotFound("Size ait bir evcil hayvan bulunamadı.");
+            }
+
+            return Ok(pet);
+        }
     }
 } 

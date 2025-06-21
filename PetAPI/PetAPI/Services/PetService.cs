@@ -2,6 +2,7 @@ using PetAPI.Data;
 using PetAPI.Dtos.Pet;
 using PetAPI.Entities;
 using PetAPI.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace PetAPI.Services
 {
@@ -24,6 +25,13 @@ namespace PetAPI.Services
             _context.Pets.Add(pet);
             await _context.SaveChangesAsync();
             return pet;
+        }
+
+        public async Task<Pet?> GetPetByUserIdAsync(int userId)
+        {
+            return await _context.Pets
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.UserId == userId);
         }
     }
 } 
