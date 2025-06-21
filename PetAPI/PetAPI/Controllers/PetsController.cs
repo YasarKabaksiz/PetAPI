@@ -48,5 +48,39 @@ namespace PetAPI.Controllers
 
             return Ok(pet);
         }
+
+        [HttpPost("feed")]
+        public async Task<IActionResult> FeedPet()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst(ClaimTypes.Name);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized("Kullanıcı kimliği bulunamadı.");
+
+            var pet = await _petService.FeedPetAsync(userId);
+
+            if (pet == null)
+            {
+                return NotFound("Size ait bir evcil hayvan bulunamadı.");
+            }
+
+            return Ok(pet);
+        }
+
+        [HttpPost("play")]
+        public async Task<IActionResult> PlayWithPet()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst(ClaimTypes.Name);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized("Kullanıcı kimliği bulunamadı.");
+
+            var pet = await _petService.PlayWithPetAsync(userId);
+
+            if (pet == null)
+            {
+                return NotFound("Size ait bir evcil hayvan bulunamadı.");
+            }
+
+            return Ok(pet);
+        }
     }
 } 
