@@ -23,7 +23,7 @@ namespace PetAPI.Data
                 entity.Property(e => e.Username).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.PasswordHash).IsRequired();
                 entity.Property(e => e.Role).IsRequired().HasMaxLength(20).HasDefaultValue("User");
-                
+
                 // Username benzersiz olmalı
                 entity.HasIndex(e => e.Username).IsUnique();
             });
@@ -45,4 +45,4 @@ namespace PetAPI.Data
             });
         }
     }
-} 
+}

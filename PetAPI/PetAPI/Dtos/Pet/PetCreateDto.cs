@@ -21,4 +21,4 @@ namespace PetAPI.Dtos.Pet
         [StringLength(30)]
         public string Type { get; set; } = string.Empty;
     }
-} 
+}

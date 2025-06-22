@@ -1,8 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using PetAPI.Data;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace PetAPI.BackgroundServices
 {
@@ -61,4 +58,4 @@ namespace PetAPI.BackgroundServices
             _logger.LogInformation("Pet Stats Updater Service durduruldu.");
         }
     }
-} 
+}

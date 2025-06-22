@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Serilog;
 using System.Net;
 using System.Text.Json;
@@ -47,4 +46,4 @@ namespace PetAPI.Middleware
             await context.Response.WriteAsync(json);
         }
     }
-} 
+}

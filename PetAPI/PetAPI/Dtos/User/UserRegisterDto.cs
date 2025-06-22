@@ -21,4 +21,4 @@ namespace PetAPI.Dtos.User
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Şifre en az 6 karakter olmalıdır.")]
         public string Password { get; set; } = string.Empty;
     }
-} 
+}

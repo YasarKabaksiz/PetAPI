@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PetAPI.Data;
 using PetAPI.Dtos.User;
 using PetAPI.Entities;
-using BCrypt.Net;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -134,4 +133,4 @@ namespace PetAPI.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
-} 
+}

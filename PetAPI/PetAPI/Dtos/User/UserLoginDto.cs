@@ -19,4 +19,4 @@ namespace PetAPI.Dtos.User
         [Required(ErrorMessage = "Şifre zorunludur.")]
         public string Password { get; set; } = string.Empty;
     }
-} 
+}

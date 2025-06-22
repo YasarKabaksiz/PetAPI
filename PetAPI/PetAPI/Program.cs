@@ -1,10 +1,10 @@
-using Microsoft.EntityFrameworkCore;
-using PetAPI.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.OpenApi.Models;
+using PetAPI.Data;
 using Serilog;
+using System.Text;
 
 // Serilog konfigürasyonu
 Log.Logger = new LoggerConfiguration()

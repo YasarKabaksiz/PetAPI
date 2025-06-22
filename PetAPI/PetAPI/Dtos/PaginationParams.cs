@@ -19,4 +19,4 @@ namespace PetAPI.Dtos
         [Range(1, 50, ErrorMessage = "Sayfa boyutu 1-50 arasında olmalıdır.")]
         public int PageSize { get; set; } = 10;
     }
-} 
+}

@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PetAPI.Dtos;
 using PetAPI.Dtos.Pet;
-using PetAPI.Entities;
 using PetAPI.Interfaces;
 using System.Security.Claims;
-using PetAPI.Dtos;
-using System.Text.Json;
 
 namespace PetAPI.Controllers
 {
@@ -149,4 +147,4 @@ namespace PetAPI.Controllers
             return Ok(pets);
         }
     }
-} 
+}

@@ -1,9 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using PetAPI.Data;
+using PetAPI.Dtos;
 using PetAPI.Dtos.Pet;
 using PetAPI.Entities;
 using PetAPI.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using PetAPI.Dtos;
 
 namespace PetAPI.Services
 {
@@ -38,26 +38,26 @@ namespace PetAPI.Services
         public async Task<Pet?> FeedPetAsync(int userId)
         {
             var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
-            
+
             if (pet == null)
                 return null;
 
             pet.Hunger = Math.Min(100, pet.Hunger + 10);
             await _context.SaveChangesAsync();
-            
+
             return pet;
         }
 
         public async Task<Pet?> PlayWithPetAsync(int userId)
         {
             var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
-            
+
             if (pet == null)
                 return null;
 
             pet.Happiness = Math.Min(100, pet.Happiness + 15);
             await _context.SaveChangesAsync();
-            
+
             return pet;
         }
 
@@ -72,4 +72,4 @@ namespace PetAPI.Services
                 .ToListAsync();
         }
     }
-} 
+}
