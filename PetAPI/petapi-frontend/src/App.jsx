@@ -18,7 +18,11 @@ function App() {
           {/* Sayfa yönlendirmeleri */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/game" element={<ProtectedRoute><GamePage /></ProtectedRoute>} />
+          <Route path="/game" element={
+            <ProtectedRoute>
+              <GamePage />
+            </ProtectedRoute>
+          } />
           <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardPage /></ProtectedRoute>} />
           
           {/* 404 - Bilinmeyen yollar için Login'e yönlendir */}

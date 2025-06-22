@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getMyPet, feedMyPet, playWithMyPet } from "../services/petService";
 import PetStatusCard from "../components/PetStatusCard.jsx";
+import CreatePetForm from "../components/CreatePetForm.jsx";
 
 function GamePage() {
   const [pet, setPet] = useState(null);
@@ -18,7 +19,7 @@ function GamePage() {
         setError("");
       } catch (err) {
         setPet(null);
-        setError(err.message || "Bilinmeyen bir hata oluştu");
+        setError("");
       } finally {
         setLoading(false);
       }
@@ -64,28 +65,26 @@ function GamePage() {
     return <div>Yükleniyor...</div>;
   }
 
-  if (pet) {
+  if (!pet) {
     return (
-      <div className="container center">
-        <PetStatusCard
-          name={pet.name}
-          hunger={pet.hunger}
-          happiness={pet.happiness}
-          health={pet.health}
-        />
-        <div style={{ marginTop: 24 }}>
-          <button onClick={handleFeed} disabled={isInteracting} style={{ marginRight: 12, padding: "10px 24px", fontSize: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>Besle</button>
-          <button onClick={handlePlay} disabled={isInteracting} style={{ padding: "10px 24px", fontSize: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>Oyna</button>
-        </div>
-        {error && <div style={{ color: "red", marginTop: 16 }}>{error}</div>}
+      <div className="container center" style={{ marginTop: 40 }}>
+        <CreatePetForm onPetCreated={setPet} />
       </div>
     );
   }
 
   return (
-    <div className="container center" style={{ marginTop: 40 }}>
-      <p>Henüz bir evcil hayvanınız yok. Bir tane oluşturun!</p>
-      <button onClick={() => window.location.href = "/register-pet"} style={{ padding: "10px 24px", fontSize: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>Pet Oluştur</button>
+    <div className="container center">
+      <PetStatusCard
+        name={pet.name}
+        hunger={pet.hunger}
+        happiness={pet.happiness}
+        health={pet.health}
+      />
+      <div style={{ marginTop: 24 }}>
+        <button onClick={handleFeed} disabled={isInteracting} style={{ marginRight: 12, padding: "10px 24px", fontSize: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>Besle</button>
+        <button onClick={handlePlay} disabled={isInteracting} style={{ padding: "10px 24px", fontSize: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>Oyna</button>
+      </div>
       {error && <div style={{ color: "red", marginTop: 16 }}>{error}</div>}
     </div>
   );
