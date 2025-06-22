@@ -104,12 +104,15 @@ app.UseMiddleware<PetAPI.Middleware.GlobalExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication(); // Kimlik doğrulama middleware'ini ekle
+app.UseRouting(); 
+
 app.UseCors(builder => builder
-    .WithOrigins("http://localhost:3000") // Sadece React uygulamasından gelen isteklere izin ver
+    .WithOrigins("http://localhost:5173") 
     .AllowAnyMethod()
     .AllowAnyHeader());
-app.UseAuthorization();
+
+app.UseAuthentication(); 
+app.UseAuthorization(); 
 
 app.MapControllers();
 
