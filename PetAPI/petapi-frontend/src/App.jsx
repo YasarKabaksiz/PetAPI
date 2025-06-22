@@ -3,6 +3,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
 import GamePage from './pages/GamePage.jsx';
 import LeaderboardPage from './pages/LeaderboardPage.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 function App() {
   return (
@@ -15,8 +16,8 @@ function App() {
           {/* Sayfa yönlendirmeleri */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/game" element={<GamePage />} />
-          <Route path="/leaderboard" element={<LeaderboardPage />} />
+          <Route path="/game" element={<ProtectedRoute><GamePage /></ProtectedRoute>} />
+          <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardPage /></ProtectedRoute>} />
           
           {/* 404 - Bilinmeyen yollar için Login'e yönlendir */}
           <Route path="*" element={<Navigate to="/login" replace />} />
