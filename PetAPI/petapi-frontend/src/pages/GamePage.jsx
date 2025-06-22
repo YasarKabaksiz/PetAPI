@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { getMyPet } from "../services/petService";
+import { getMyPet, feedMyPet, playWithMyPet } from "../services/petService";
 import PetStatusCard from "../components/PetStatusCard.jsx";
 
 function GamePage() {
   const [pet, setPet] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [isInteracting, setIsInteracting] = useState(false);
 
   useEffect(() => {
     const fetchPet = async () => {
@@ -24,19 +26,58 @@ function GamePage() {
     fetchPet();
   }, []);
 
+  const handleFeed = async () => {
+    setIsInteracting(true);
+    setActionLoading(true);
+    try {
+      const updatedPet = await feedMyPet();
+      setPet(updatedPet);
+      setError("");
+    } catch (err) {
+      setError(err.message || "Besleme işlemi sırasında hata oluştu");
+    } finally {
+      setActionLoading(false);
+      setTimeout(() => {
+        setIsInteracting(false);
+      }, 5000);
+    }
+  };
+
+  const handlePlay = async () => {
+    setIsInteracting(true);
+    setActionLoading(true);
+    try {
+      const updatedPet = await playWithMyPet();
+      setPet(updatedPet);
+      setError("");
+    } catch (err) {
+      setError(err.message || "Oyun oynama işlemi sırasında hata oluştu");
+    } finally {
+      setActionLoading(false);
+      setTimeout(() => {
+        setIsInteracting(false);
+      }, 5000);
+    }
+  };
+
   if (loading) {
     return <div>Yükleniyor...</div>;
   }
 
   if (pet) {
     return (
-      <div>
+      <div style={{ textAlign: "center" }}>
         <PetStatusCard
           name={pet.name}
           hunger={pet.hunger}
           happiness={pet.happiness}
           health={pet.health}
         />
+        <div style={{ marginTop: 24 }}>
+          <button onClick={handleFeed} disabled={isInteracting} style={{ marginRight: 12, padding: "10px 20px", fontSize: 16 }}>Besle</button>
+          <button onClick={handlePlay} disabled={isInteracting} style={{ padding: "10px 20px", fontSize: 16 }}>Oyna</button>
+        </div>
+        {error && <div style={{ color: "red", marginTop: 16 }}>{error}</div>}
       </div>
     );
   }
