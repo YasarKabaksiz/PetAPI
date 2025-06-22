@@ -16,3 +16,24 @@ Tüm önemli olaylar (bir işlemin başlangıcı/bitişi, önemli kararlar) ve �
 Gereksiz yere tüm tabloyu çekmekten kaçın. Where, Select gibi ifadelerle sorguyu veritabanı tarafında filtrele. Select kullanarak sadece ihtiyaç duyulan kolonları çek (AutoMapper veya manuel mapping ile DTO'lara dönüştür).
 Döngü içinde veritabanı sorgusu yapmaktan kaçın. Gerektiğinde Include veya ThenInclude kullanarak ilişkili verileri tek bir sorguda verimli bir şekilde çek.
 Sadece veri okuma işlemi yapılan sorgularda (GET istekleri), performansı artırmak için .AsNoTracking() metodunu kullan.
+Uygulama, küçük, bağımsız ve yeniden kullanılabilir bileşenlerden (components) oluşmalıdır. Tek bir dosyada binlerce satır kod olmamalıdır.
+Tekrar eden UI parçaları (buton, kart, input alanı gibi) kendi bileşen dosyalarına ayrılmalıdır.
+Proje, src klasörü altında components, pages, services, hooks, contexts, utils ve styles gibi mantıksal ve standart klasörlere ayrılmalıdır.
+Her bileşen veya fonksiyon sadece tek bir iş yapmalıdır. Örneğin, veri çeken bir bileşen, aynı zamanda o veriyi ekranda gösterme mantığını da içerebilir ama API çağrısının kendisi services katmanında olmalıdır.
+Tüm bileşenler, class component'ler yerine Fonksiyonel Bileşenler (Functional Components) olarak yazılmalıdır.
+Durum (state) yönetimi ve yan etkiler (side effects) için kesinlikle React Hooks (useState, useEffect, useContext vb.) kullanılmalıdır.
+Tüm backend API çağrıları, src/services klasörü altındaki dosyalarda merkezileştirilmelidir. Bileşenlerin içinden doğrudan axios veya fetch çağrısı yapılmamalıdır.
+API temel URL'i ve token ekleme gibi genel ayarlar için merkezi bir axios instance'ı oluşturulup kullanılmalıdır.
+Basit bileşenler için yerel durum (useState) yeterlidir.
+Uygulama genelinde paylaşılması gereken durumlar (kullanıcı bilgileri, token gibi) için Context API (useContext) kullanılmalıdır. Proje karmaşıklaştıkça Redux veya Zustand gibi kütüphaneler düşünülebilir ama bu proje için Context API yeterlidir.
+Uygulama içi sayfa geçişleri için react-router-dom kütüphanesi kullanılmalıdır. Statik linkler yerine <Link> bileşeni, programatik yönlendirmeler için useNavigate hook'u tercih edilmelidir.
+Oluşturulan arayüz, hem masaüstü hem de mobil cihaz ekranlarında düzgün görünmelidir. Bunun için modern CSS teknikleri (Flexbox, Grid) veya bir CSS framework'ü kullanılmalıdır.
+API'den veri beklenirken kullanıcıya bir yükleniyor durumu (loading spinner, iskelet ekran) gösterilmelidir.
+Bir API çağrısı başarısız olduğunda, kullanıcıya anlaşılır bir hata mesajı gösterilmelidir.
+Bir işlem (kayıt, giriş, pet besleme) başarıyla tamamlandığında, kullanıcıya bir başarı bildirimi (toast notification veya basit bir mesaj) gösterilebilir.
+Kullanıcı girdisi alan formlarda, frontend tarafında da temel doğrulamalar yapılmalıdır (örneğin, şifre alanının boş bırakılmaması). Bu, gereksiz API isteklerini önler.
+Hatalı giriş yapıldığında, ilgili input alanının altında veya yanında kullanıcıya yol gösteren bir hata mesajı belirtilmelidir.
+Değişken ve fonksiyon isimleri, ne işe yaradıklarını açıkça anlatan, kendi kendini belgeleyen (self-documenting) isimler olmalıdır. (Örn: fetchUserData yerine fetchLoggedInUserPetData).
+Karmaşık mantık içeren kod bloklarına açıklayıcı yorum satırları (// Bu fonksiyon...) eklenmelidir.
+Kullanıcıdan gelen ve ekrana basılacak veriler (eğer varsa) XSS (Cross-Site Scripting) saldırılarına karşı sanitize edilmelidir (React bunu büyük ölçüde kendisi yapar ama bilinçli olmak önemlidir).
+Hassas bilgiler (API anahtarları vb.) asla frontend kodunun içine gömülmemelidir. Bu tür anahtarlar .env dosyalarında saklanmalı ve build sürecinde kullanılmalıdır.
