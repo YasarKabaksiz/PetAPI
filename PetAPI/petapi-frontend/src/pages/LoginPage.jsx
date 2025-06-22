@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "../services/authService";
+import { getMe } from "../services/userService";
+import { AuthContext } from "../context/AuthContext.jsx";
 
 function LoginPage() {
   const [username, setUsername] = useState("");
@@ -8,14 +10,21 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { loginAction } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     try {
+      // 1. Token'ı al
       const data = await login({ username, password });
-      localStorage.setItem("token", data.token);
+      const token = data.token;
+      // 2. Token ile kullanıcı verisini çek
+      const userData = await getMe(token);
+      // 3. Global state'i ve localStorage'ı güncelle
+      loginAction(token, userData);
+      // 4. Yönlendir
       navigate("/game");
     } catch (err) {
       setError(err.response?.data?.message || "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
