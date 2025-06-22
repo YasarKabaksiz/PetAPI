@@ -22,25 +22,36 @@ function CreatePetForm({ onPetCreated }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="center" style={{ width: "100%", maxWidth: 400 }}>
-      <h3 style={{ marginBottom: 20 }}>Evcil Hayvanını Oluştur</h3>
+    <form
+      onSubmit={handleSubmit}
+      className="bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-2xl p-8 flex flex-col items-center w-full max-w-md"
+    >
+      <h3 className="text-2xl font-bold text-cyan-300 mb-6">Evcil Hayvanını Oluştur</h3>
       <input
         type="text"
         placeholder="Pet Adı"
         value={name}
         onChange={e => setName(e.target.value)}
         required
-        style={{ marginBottom: 16 }}
+        className="w-full mb-4 px-4 py-2 rounded-lg bg-slate-900/80 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition"
       />
-      <select value={type} onChange={e => setType(e.target.value)} style={{ marginBottom: 16 }}>
+      <select
+        value={type}
+        onChange={e => setType(e.target.value)}
+        className="w-full mb-6 px-4 py-2 rounded-lg bg-slate-900/80 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition"
+      >
         <option value="Kedi">Kedi</option>
         <option value="Köpek">Köpek</option>
         <option value="Kuş">Kuş</option>
       </select>
-      <button type="submit" disabled={loading} style={{ width: "100%", marginBottom: 12 }}>
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold py-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+      >
         {loading ? "Oluşturuluyor..." : "Oluştur"}
       </button>
-      {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
+      {error && <div className="text-red-400 mt-4 text-center">{error}</div>}
     </form>
   );
 }

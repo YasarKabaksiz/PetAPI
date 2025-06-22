@@ -107,7 +107,7 @@ app.UseHttpsRedirection();
 app.UseRouting(); 
 
 app.UseCors(builder => builder
-    .WithOrigins("http://localhost:5173") 
+    .WithOrigins("http://localhost:5174") 
     .AllowAnyMethod()
     .AllowAnyHeader());
 
