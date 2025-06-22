@@ -66,7 +66,7 @@ function GamePage() {
 
   if (pet) {
     return (
-      <div style={{ textAlign: "center" }}>
+      <div className="container center">
         <PetStatusCard
           name={pet.name}
           hunger={pet.hunger}
@@ -74,8 +74,8 @@ function GamePage() {
           health={pet.health}
         />
         <div style={{ marginTop: 24 }}>
-          <button onClick={handleFeed} disabled={isInteracting} style={{ marginRight: 12, padding: "10px 20px", fontSize: 16 }}>Besle</button>
-          <button onClick={handlePlay} disabled={isInteracting} style={{ padding: "10px 20px", fontSize: 16 }}>Oyna</button>
+          <button onClick={handleFeed} disabled={isInteracting} style={{ marginRight: 12, padding: "10px 24px", fontSize: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>Besle</button>
+          <button onClick={handlePlay} disabled={isInteracting} style={{ padding: "10px 24px", fontSize: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>Oyna</button>
         </div>
         {error && <div style={{ color: "red", marginTop: 16 }}>{error}</div>}
       </div>
@@ -83,9 +83,9 @@ function GamePage() {
   }
 
   return (
-    <div style={{ textAlign: "center", marginTop: 40 }}>
+    <div className="container center" style={{ marginTop: 40 }}>
       <p>Henüz bir evcil hayvanınız yok. Bir tane oluşturun!</p>
-      <button onClick={() => window.location.href = "/register-pet"} style={{ padding: "10px 20px", fontSize: 16 }}>Pet Oluştur</button>
+      <button onClick={() => window.location.href = "/register-pet"} style={{ padding: "10px 24px", fontSize: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>Pet Oluştur</button>
       {error && <div style={{ color: "red", marginTop: 16 }}>{error}</div>}
     </div>
   );

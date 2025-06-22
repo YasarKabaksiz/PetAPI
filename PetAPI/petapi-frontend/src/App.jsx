@@ -4,10 +4,12 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import GamePage from './pages/GamePage.jsx';
 import LeaderboardPage from './pages/LeaderboardPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import Navbar from './components/Navbar.jsx';
 
 function App() {
   return (
     <Router>
+      <Navbar />
       <div className="App">
         <Routes>
           {/* Ana sayfa - Login'e yönlendir */}

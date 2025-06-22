@@ -1,1 +1,24 @@
 /* Temel CSS reset ve stiller buraya gelecek */ 
+
+body {
+  min-height: 100vh;
+  background: #f6f8fa;
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+.container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+} 

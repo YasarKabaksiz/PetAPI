@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../services/authService';
 
@@ -36,91 +36,32 @@ function LoginPage() {
   };
 
   return (
-    <div style={{ 
-      maxWidth: '400px', 
-      margin: '50px auto', 
-      padding: '20px',
-      border: '1px solid #ddd',
-      borderRadius: '8px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-    }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>Giriş Yap</h1>
-      
-      {error && (
-        <div style={{
-          backgroundColor: '#ffebee',
-          color: '#c62828',
-          padding: '10px',
-          borderRadius: '4px',
-          marginBottom: '20px',
-          border: '1px solid #ffcdd2'
-        }}>
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="username" style={{ display: 'block', marginBottom: '5px' }}>
-            Kullanıcı Adı:
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-            required
-            style={{
-              width: '100%',
-              padding: '10px',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '16px'
-            }}
-          />
-        </div>
-
-        <div style={{ marginBottom: '20px' }}>
-          <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>
-            Şifre:
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            required
-            style={{
-              width: '100%',
-              padding: '10px',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '16px'
-            }}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          style={{
-            width: '100%',
-            padding: '12px',
-            backgroundColor: '#1976d2',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            fontSize: '16px',
-            cursor: isLoading ? 'not-allowed' : 'pointer',
-            opacity: isLoading ? 0.7 : 1
-          }}
-        >
-          {isLoading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
+    <div className="container center">
+      <h2 style={{ marginBottom: 24 }}>Giriş Yap</h2>
+      <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+        <input
+          type="text"
+          placeholder="Kullanıcı Adı"
+          name="username"
+          value={formData.username}
+          onChange={handleInputChange}
+          style={{ marginBottom: 16 }}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Şifre"
+          name="password"
+          value={formData.password}
+          onChange={handleInputChange}
+          style={{ marginBottom: 16 }}
+          required
+        />
+        <button type="submit" style={{ width: "100%", marginBottom: 12 }} disabled={isLoading}>
+          {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
         </button>
+        {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
       </form>
-
       <div style={{ textAlign: 'center', marginTop: '20px' }}>
         <p>
           Hesabınız yok mu?{' '}
