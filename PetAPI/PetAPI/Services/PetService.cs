@@ -4,6 +4,7 @@ using PetAPI.Dtos;
 using PetAPI.Dtos.Pet;
 using PetAPI.Entities;
 using PetAPI.Interfaces;
+using PetAPI.Services;
 
 namespace PetAPI.Services
 {
@@ -28,37 +29,91 @@ namespace PetAPI.Services
             return pet;
         }
 
-        public async Task<Pet?> GetPetByUserIdAsync(int userId)
+        public async Task<PetDto?> GetPetByUserIdAsync(int userId)
         {
-            return await _context.Pets
+            var pet = await _context.Pets
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.UserId == userId);
+            if (pet == null) return null;
+            return new PetDto
+            {
+                Id = pet.Id,
+                Name = pet.Name,
+                Type = pet.Type,
+                Level = pet.Level,
+                Experience = pet.Experience,
+                Hunger = pet.Hunger,
+                Happiness = pet.Happiness,
+                Health = pet.Health
+            };
         }
 
-        public async Task<Pet?> FeedPetAsync(int userId)
+        public async Task<PetDto?> FeedPetAsync(int userId)
         {
             var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
-            if (pet == null)
+            if (pet == null || user == null)
                 return null;
 
             pet.Hunger = Math.Min(100, pet.Hunger + 10);
-            await _context.SaveChangesAsync();
+            pet.Experience += 5;
+            user.Coins += 1;
 
-            return pet;
+            int xpForNextLevel = LevelingHelper.GetXpForNextLevel(pet.Level);
+            if (pet.Experience >= xpForNextLevel)
+            {
+                pet.Level += 1;
+                pet.Experience -= xpForNextLevel;
+                Console.WriteLine($"Pet {pet.Name} seviye atladı! Yeni seviye: {pet.Level}");
+            }
+
+            await _context.SaveChangesAsync();
+            return new PetDto
+            {
+                Id = pet.Id,
+                Name = pet.Name,
+                Type = pet.Type,
+                Level = pet.Level,
+                Experience = pet.Experience,
+                Hunger = pet.Hunger,
+                Happiness = pet.Happiness,
+                Health = pet.Health
+            };
         }
 
-        public async Task<Pet?> PlayWithPetAsync(int userId)
+        public async Task<PetDto?> PlayWithPetAsync(int userId)
         {
             var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
-            if (pet == null)
+            if (pet == null || user == null)
                 return null;
 
             pet.Happiness = Math.Min(100, pet.Happiness + 15);
-            await _context.SaveChangesAsync();
+            pet.Experience += 10;
+            user.Coins += 2;
 
-            return pet;
+            int xpForNextLevel = LevelingHelper.GetXpForNextLevel(pet.Level);
+            if (pet.Experience >= xpForNextLevel)
+            {
+                pet.Level += 1;
+                pet.Experience -= xpForNextLevel;
+                Console.WriteLine($"Pet {pet.Name} seviye atladı! Yeni seviye: {pet.Level}");
+            }
+
+            await _context.SaveChangesAsync();
+            return new PetDto
+            {
+                Id = pet.Id,
+                Name = pet.Name,
+                Type = pet.Type,
+                Level = pet.Level,
+                Experience = pet.Experience,
+                Hunger = pet.Hunger,
+                Happiness = pet.Happiness,
+                Health = pet.Health
+            };
         }
 
         public async Task<IEnumerable<Pet>> GetLeaderboardAsync(PaginationParams paginationParams)

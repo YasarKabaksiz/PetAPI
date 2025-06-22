@@ -19,6 +19,9 @@ namespace PetAPI.Entities
         public int Happiness { get; set; } = 100;
         public int Health { get; set; } = 100;
 
+        public int Level { get; set; } = 1;
+        public int Experience { get; set; } = 0;
+
         // Foreign key
         [ForeignKey("User")]
         public int UserId { get; set; }

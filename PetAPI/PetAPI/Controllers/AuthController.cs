@@ -132,5 +132,28 @@ namespace PetAPI.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        /// <summary>
+        /// Giriş yapmış kullanıcının kendi bilgilerini döndürür
+        /// </summary>
+        /// <returns>Kullanıcı adı, rol ve coins bilgisi</returns>
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMe()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst(ClaimTypes.Name);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized("Kullanıcı kimliği bulunamadı.");
+
+            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+                return NotFound("Kullanıcı bulunamadı.");
+
+            return Ok(new
+            {
+                user.Username,
+                user.Role,
+                user.Coins
+            });
+        }
     }
 }
