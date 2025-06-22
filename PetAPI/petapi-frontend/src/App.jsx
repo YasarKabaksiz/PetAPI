@@ -12,7 +12,7 @@ function App() {
     <AuthProvider>
       <Router>
         <Navbar />
-        <div className="App">
+        <div className="bg-slate-900 text-white min-h-screen font-sans">
           <Routes>
             {/* Ana sayfa - Login'e yönlendir */}
             <Route path="/" element={<Navigate to="/login" replace />} />

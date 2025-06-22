@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext.jsx";
+import { FaCoins } from "react-icons/fa";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -12,23 +13,34 @@ function Navbar() {
   };
 
   return (
-    <nav style={{ background: "#fff", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", padding: "12px 0", marginBottom: 32 }}>
-      <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px" }}>
-        <div style={{ fontWeight: 700, fontSize: 20 }}>
-          <Link to="/game" style={{ textDecoration: "none", color: "#222" }}>Pet Oyunu</Link>
+    <nav className="bg-slate-800 shadow-lg px-4 py-3">
+      <div className="max-w-5xl mx-auto flex justify-between items-center">
+        {/* Logo veya Oyun Adı */}
+        <div className="text-2xl font-extrabold tracking-tight text-cyan-400 select-none">
+          <Link to="/game" className="hover:text-cyan-300 transition-colors">PetAPI</Link>
         </div>
-        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+        <div className="flex items-center gap-4">
+          {user && (
+            <div className="flex items-center bg-yellow-500 text-slate-900 font-bold px-3 py-1 rounded-full mr-2 shadow">
+              <FaCoins className="mr-1 text-lg" />
+              <span>{user.coins}</span>
+            </div>
+          )}
           {user ? (
             <>
-              <span style={{ fontWeight: 500, color: "#444", marginRight: 12 }}>Pati Parası: {user.coins} 🪙</span>
-              <Link to="/game">Oyun Ekranı</Link>
-              <Link to="/leaderboard">Liderlik Tablosu</Link>
-              <button onClick={handleLogout} style={{ background: "#e53e3e", color: "#fff", border: "none", borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Çıkış Yap</button>
+              <Link to="/game" className="hover:text-cyan-400 transition-colors font-medium">Oyun Ekranı</Link>
+              <Link to="/leaderboard" className="hover:text-cyan-400 transition-colors font-medium">Liderlik Tablosu</Link>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white font-semibold ml-2 transition-colors"
+              >
+                Çıkış Yap
+              </button>
             </>
           ) : (
             <>
-              <Link to="/login">Giriş Yap</Link>
-              <Link to="/register">Kayıt Ol</Link>
+              <Link to="/login" className="hover:text-cyan-400 transition-colors font-medium">Giriş Yap</Link>
+              <Link to="/register" className="hover:text-cyan-400 transition-colors font-medium">Kayıt Ol</Link>
             </>
           )}
         </div>
