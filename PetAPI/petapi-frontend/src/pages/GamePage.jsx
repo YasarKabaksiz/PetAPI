@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { getMyPet, feedMyPet, playWithMyPet } from "../services/petService";
 import PetStatusCard from "../components/PetStatusCard.jsx";
 import CreatePetForm from "../components/CreatePetForm.jsx";
+import { AuthContext } from "../context/AuthContext.jsx";
 
 function GamePage() {
   const [pet, setPet] = useState(null);
@@ -9,6 +10,7 @@ function GamePage() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [isInteracting, setIsInteracting] = useState(false);
+  const { user, updateUser, token } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchPet = async () => {
@@ -34,6 +36,9 @@ function GamePage() {
       const updatedPet = await feedMyPet();
       setPet(updatedPet);
       setError("");
+      if (user) {
+        updateUser({ ...user, coins: user.coins + 1 });
+      }
     } catch (err) {
       setError(err.message || "Besleme işlemi sırasında hata oluştu");
     } finally {
@@ -51,6 +56,9 @@ function GamePage() {
       const updatedPet = await playWithMyPet();
       setPet(updatedPet);
       setError("");
+      if (user) {
+        updateUser({ ...user, coins: user.coins + 2 });
+      }
     } catch (err) {
       setError(err.message || "Oyun oynama işlemi sırasında hata oluştu");
     } finally {
@@ -80,6 +88,8 @@ function GamePage() {
         hunger={pet.hunger}
         happiness={pet.happiness}
         health={pet.health}
+        level={pet.level}
+        experience={pet.experience}
       />
       <div style={{ marginTop: 24 }}>
         <button onClick={handleFeed} disabled={isInteracting} style={{ marginRight: 12, padding: "10px 24px", fontSize: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>Besle</button>

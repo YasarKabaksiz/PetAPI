@@ -59,4 +59,13 @@ export const isAuthenticated = () => {
  */
 export const getToken = () => {
   return localStorage.getItem('token');
+};
+
+export const getUserInfo = async (token) => {
+  const response = await api.get('/auth/me', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+  return response.data;
 }; 

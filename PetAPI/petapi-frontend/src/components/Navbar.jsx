@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext.jsx";
 
 function Navbar() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const { user, logout } = useContext(AuthContext);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    logout();
     navigate("/login");
   };
 
@@ -16,9 +17,10 @@ function Navbar() {
         <div style={{ fontWeight: 700, fontSize: 20 }}>
           <Link to="/game" style={{ textDecoration: "none", color: "#222" }}>Pet Oyunu</Link>
         </div>
-        <div style={{ display: "flex", gap: 16 }}>
-          {token ? (
+        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+          {user ? (
             <>
+              <span style={{ fontWeight: 500, color: "#444", marginRight: 12 }}>Pati Parası: {user.coins} 🪙</span>
               <Link to="/game">Oyun Ekranı</Link>
               <Link to="/leaderboard">Liderlik Tablosu</Link>
               <button onClick={handleLogout} style={{ background: "#e53e3e", color: "#fff", border: "none", borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Çıkış Yap</button>
