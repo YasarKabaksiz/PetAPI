@@ -4,6 +4,7 @@ import PetStatusCard from "../components/PetStatusCard.jsx";
 import CreatePetForm from "../components/CreatePetForm.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
 import { FaUtensils, FaGamepad } from "react-icons/fa";
+import useInterval from "../hooks/useInterval";
 
 function GamePage() {
   // --- STATE MANAGEMENT ---
@@ -23,58 +24,41 @@ function GamePage() {
     return () => clearTimeout(timer);
   }, [cooldown]);
 
-  // --- DATA FETCHING ---
-  // Sayfa yüklendiğinde kullanıcının evcil hayvanını getiren ana fonksiyon
+  // --- PET VERİSİNİ ÇEKEN ANA FONKSİYON ---
+  const fetchPetData = async () => {
+    try {
+      const petData = await getMyPet();
+      setPet(petData);
+    } catch (error) {
+      console.error("Pet verisi çekilirken hata oluştu:", error);
+      // İsteğe bağlı: Kullanıcıya bilgi verecek bir state ayarlanabilir.
+    }
+  };
+
+  // --- İLK YÜKLEMEDE PET VERİSİNİ ÇEK ---
   useEffect(() => {
-    const fetchPetData = async () => {
-      try {
-        setIsLoading(true);
-        const petData = await getMyPet();
-        
-        // Hata ayıklama için konsola log yazdır
-        console.log("API'den gelen pet verisi:", petData);
+    setIsLoading(true);
+    fetchPetData().finally(() => setIsLoading(false));
+  }, []);
 
-        if (petData) {
-          setPet(petData);
-        } else {
-          // API hata vermedi ama pet de göndermedi, yani kullanıcının peti yok.
-          setPet(null);
-        }
-        setError(""); // Başarılı istek sonrası eski hataları temizle
-      } catch (err) {
-        // Hata ayıklama için hatanın tamamını konsola yazdır
-        console.error("Pet bilgileri alınırken hata oluştu:", err);
-        
-        // 404 hatası bir "hata" değil, kullanıcının peti olmadığının bir göstergesi olabilir.
-        // Bu yüzden kullanıcıya bir hata mesajı göstermiyoruz.
-        if (err.response?.status !== 404) {
-          setError("Evcil hayvan bilgileri yüklenemedi. Lütfen sayfayı yenileyin.");
-        }
-        setPet(null); // Hata durumunda pet verisini temizle
-      } finally {
-        setIsLoading(false); // Her durumda yüklenme durumunu sonlandır
-      }
-    };
-
-    fetchPetData();
-  }, []); // Boş bağımlılık dizisi sayesinde sadece ilk render'da çalışır
+  // --- POLLING: Her 10 saniyede bir pet verisini güncelle ---
+  useInterval(() => {
+    if (pet && !isActionLoading) {
+      fetchPetData();
+    }
+  }, 10000);
 
   // --- EVENT HANDLERS ---
-  // Pet oluşturulduğunda tetiklenen fonksiyon (CreatePetForm'dan gelir)
   const handlePetCreated = (newPet) => {
     setPet(newPet);
   };
 
-  // "Besle" butonuna tıklandığında
   const handleFeed = async () => {
     if (isActionLoading || cooldown > 0) return;
-
     setIsActionLoading(true);
     try {
       const updatedPet = await feedMyPet();
-      setPet(updatedPet); // Arayüzü backend'den gelen en güncel veriyle güncelle
-      
-      // Global kullanıcı context'ini güncelle (daha güvenli yöntem)
+      setPet(updatedPet);
       if (user) {
         updateUser(prevUser => ({ ...prevUser, coins: prevUser.coins + 1 }));
       }
@@ -87,15 +71,12 @@ function GamePage() {
     }
   };
 
-  // "Oyna" butonuna tıklandığında
   const handlePlay = async () => {
     if (isActionLoading || cooldown > 0) return;
-
     setIsActionLoading(true);
     try {
       const updatedPet = await playWithMyPet();
       setPet(updatedPet);
-      
       if (user) {
         updateUser(prevUser => ({ ...prevUser, coins: prevUser.coins + 2 }));
       }
@@ -109,12 +90,10 @@ function GamePage() {
   };
 
   // --- RENDER LOGIC ---
-  // 1. Veri yüklenirken gösterilecek ekran
   if (isLoading) {
     return <div className="flex justify-center items-center min-h-[70vh] text-2xl text-cyan-300">Evcil hayvan bilgileri yükleniyor...</div>;
   }
 
-  // 2. Veri yüklendi ama pet yoksa, pet oluşturma formunu göster
   if (!pet) {
     return (
       <div className="flex justify-center items-center min-h-[70vh]">
@@ -123,7 +102,6 @@ function GamePage() {
     );
   }
 
-  // 3. Veri yüklendi ve pet varsa, ana oyun ekranını göster
   return (
     <div className="flex flex-col md:flex-row gap-8 max-w-5xl mx-auto py-8 px-4">
       {/* Sol Sütun: Pet görseli ve durum kartı */}
@@ -138,7 +116,6 @@ function GamePage() {
         </div>
         <PetStatusCard pet={pet} />
       </div>
-
       {/* Sağ Sütun: Etkileşim butonları */}
       <div className="flex-1 flex flex-col items-center gap-8 justify-center">
         <div className="flex flex-col gap-6 w-full max-w-xs">
