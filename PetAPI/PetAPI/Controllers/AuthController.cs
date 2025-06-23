@@ -45,11 +45,12 @@ namespace PetAPI.Controllers
                 // Kullanıcı adının zaten kullanılıp kullanılmadığını kontrol et
                 var existingUser = await _context.Users
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(u => u.Username == registerDto.Username);
+                    .FirstOrDefaultAsync(u => u.Username.ToLower() == registerDto.Username.ToLower());
 
                 if (existingUser != null)
                 {
-                    return BadRequest("Bu kullanıcı adı zaten alınmış.");
+                    // HTTP 409 Conflict durum kodu ile birlikte net bir hata mesajı dön
+                    return Conflict(new { message = "Bu kullanıcı adı zaten kullanılıyor. Lütfen başka bir tane deneyin." });
                 }
 
                 // Şifreyi güvenli bir şekilde hash'le

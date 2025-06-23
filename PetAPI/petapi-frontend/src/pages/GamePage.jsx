@@ -5,6 +5,7 @@ import CreatePetForm from "../components/CreatePetForm.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
 import { FaUtensils, FaGamepad } from "react-icons/fa";
 import useInterval from "../hooks/useInterval";
+import PetHologram from "../components/hologram/PetHologram.jsx";
 
 function GamePage() {
   // --- STATE MANAGEMENT ---
@@ -14,6 +15,7 @@ function GamePage() {
   const [cooldown, setCooldown] = useState(0); // Butonlar için geri sayım
   const [error, setError] = useState(""); // Hata mesajları için
   const { user, updateUser } = useContext(AuthContext); // Global kullanıcı bilgileri
+  const [effectKey, setEffectKey] = useState(0); // Hologram efekt tetikleyici
 
   // --- COOLDOWN GERI SAYIM ---
   useEffect(() => {
@@ -63,6 +65,7 @@ function GamePage() {
         updateUser(prevUser => ({ ...prevUser, coins: prevUser.coins + 1 }));
       }
       setError("");
+      setEffectKey(e => e + 1); // Hologram efektini tetikle
     } catch (err) {
       setError(err.response?.data?.message || "Besleme işlemi sırasında bir hata oluştu.");
     } finally {
@@ -81,6 +84,7 @@ function GamePage() {
         updateUser(prevUser => ({ ...prevUser, coins: prevUser.coins + 2 }));
       }
       setError("");
+      setEffectKey(e => e + 1); // Hologram efektini tetikle
     } catch (err) {
       setError(err.response?.data?.message || "Oyun oynama işlemi sırasında bir hata oluştu.");
     } finally {
@@ -102,41 +106,45 @@ function GamePage() {
     );
   }
 
+  // XP ve Level bilgisi
+  const xpForNextLevel = pet.level * 100;
+
   return (
-    <div className="flex flex-col md:flex-row gap-8 max-w-5xl mx-auto py-8 px-4">
-      {/* Sol Sütun: Pet görseli ve durum kartı */}
-      <div className="flex-1 flex flex-col items-center gap-6">
-        <div className="w-40 h-40 rounded-full bg-gradient-to-br from-cyan-400 to-blue-700 flex items-center justify-center shadow-lg mb-4 ring-4 ring-cyan-500/50">
-          <span className="text-7xl select-none animate-pulse">
-            {pet.type === "Kedi" && "🐱"}
-            {pet.type === "Köpek" && "🐶"}
-            {pet.type === "Kuş" && "🐦"}
-            {!["Kedi", "Köpek", "Kuş"].includes(pet.type) && "🐾"}
-          </span>
-        </div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center min-h-[calc(100vh-80px)] p-8 bg-gradient-to-br from-slate-900 to-slate-800">
+      {/* Sol Sütun: Durum Kartı */}
+      <div className="flex flex-col items-center justify-center">
         <PetStatusCard pet={pet} />
       </div>
-      {/* Sağ Sütun: Etkileşim butonları */}
-      <div className="flex-1 flex flex-col items-center gap-8 justify-center">
-        <div className="flex flex-col gap-6 w-full max-w-xs">
-          <button
-            onClick={handleFeed}
-            disabled={isActionLoading || cooldown > 0}
-            className="flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 active:scale-95 text-white text-lg font-bold py-4 rounded-xl shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
-          >
-            <FaUtensils className="text-xl" />
-            {cooldown > 0 ? `Bekle (${cooldown}s)` : "Besle"}
-          </button>
-          <button
-            onClick={handlePlay}
-            disabled={isActionLoading || cooldown > 0}
-            className="flex items-center justify-center gap-3 bg-blue-500 hover:bg-blue-600 active:scale-95 text-white text-lg font-bold py-4 rounded-xl shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
-          >
-            <FaGamepad className="text-xl" />
-            {cooldown > 0 ? `Bekle (${cooldown}s)` : "Oyna"}
-          </button>
+      {/* Orta Sütun: 3D Hologram ve Bilgiler */}
+      <div className="flex flex-col items-center justify-center">
+        <div className="h-96 w-full flex items-center justify-center">
+          <PetHologram petType={pet.type} effectKey={effectKey} />
         </div>
-        {error && <div className="text-red-400 text-center mt-4 bg-red-900/50 p-3 rounded-lg">{error}</div>}
+        <div className="mt-8 text-cyan-300 text-2xl font-bold text-shadow-glow text-center select-none">
+          Seviye <span className="text-3xl text-cyan-400 drop-shadow">{pet.level}</span>
+          <span className="mx-3 text-base text-cyan-200">|</span>
+          XP <span className="text-xl text-cyan-200">{pet.experience} / {xpForNextLevel}</span>
+        </div>
+      </div>
+      {/* Sağ Sütun: Etkileşim Butonları */}
+      <div className="flex flex-col items-center justify-center gap-8">
+        <button
+          onClick={handleFeed}
+          disabled={isActionLoading || cooldown > 0}
+          className="w-48 py-4 mb-2 flex items-center justify-center gap-3 bg-cyan-900/60 border border-cyan-500 text-cyan-200 text-lg font-bold rounded-2xl shadow-xl hover:bg-cyan-800/80 hover:border-cyan-400 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
+        >
+          <FaUtensils className="text-2xl" />
+          {cooldown > 0 ? `Bekle (${cooldown}s)` : "Besle"}
+        </button>
+        <button
+          onClick={handlePlay}
+          disabled={isActionLoading || cooldown > 0}
+          className="w-48 py-4 flex items-center justify-center gap-3 bg-cyan-900/60 border border-cyan-500 text-cyan-200 text-lg font-bold rounded-2xl shadow-xl hover:bg-cyan-800/80 hover:border-cyan-400 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
+        >
+          <FaGamepad className="text-2xl" />
+          {cooldown > 0 ? `Bekle (${cooldown}s)` : "Oyna"}
+        </button>
+        {error && <div className="text-red-400 text-center mt-4 bg-red-900/50 p-3 rounded-lg w-48">{error}</div>}
       </div>
     </div>
   );

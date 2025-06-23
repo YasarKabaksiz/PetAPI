@@ -34,7 +34,7 @@ export const register = async (userData) => {
     const response = await api.post('/auth/register', userData);
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data || 'Kayıt olurken bir hata oluştu');
+    throw error;
   }
 };
 

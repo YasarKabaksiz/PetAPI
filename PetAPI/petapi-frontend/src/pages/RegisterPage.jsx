@@ -18,7 +18,11 @@ function RegisterPage() {
       await register({ username, email, password });
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.message || "Kayıt başarısız. Lütfen bilgilerinizi kontrol edin.");
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Kayıt başarısız. Lütfen bilgilerinizi kontrol edin.");
+      }
     } finally {
       setLoading(false);
     }
