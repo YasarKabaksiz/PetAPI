@@ -16,6 +16,7 @@ function GamePage() {
   const [error, setError] = useState(""); // Hata mesajları için
   const { user, updateUser } = useContext(AuthContext); // Global kullanıcı bilgileri
   const [effectKey, setEffectKey] = useState(0); // Hologram efekt tetikleyici
+  const [hologramEffect, setHologramEffect] = useState({ type: null, key: 0 });
 
   // --- COOLDOWN GERI SAYIM ---
   useEffect(() => {
@@ -65,12 +66,12 @@ function GamePage() {
         updateUser(prevUser => ({ ...prevUser, coins: prevUser.coins + 1 }));
       }
       setError("");
-      setEffectKey(e => e + 1); // Hologram efektini tetikle
+      setHologramEffect(prev => ({ type: 'feed', key: prev.key + 1 }));
     } catch (err) {
       setError(err.response?.data?.message || "Besleme işlemi sırasında bir hata oluştu.");
     } finally {
       setIsActionLoading(false);
-      setCooldown(5); // Geri sayımı başlat
+      setCooldown(5);
     }
   };
 
@@ -84,12 +85,12 @@ function GamePage() {
         updateUser(prevUser => ({ ...prevUser, coins: prevUser.coins + 2 }));
       }
       setError("");
-      setEffectKey(e => e + 1); // Hologram efektini tetikle
+      setHologramEffect(prev => ({ type: 'play', key: prev.key + 1 }));
     } catch (err) {
       setError(err.response?.data?.message || "Oyun oynama işlemi sırasında bir hata oluştu.");
     } finally {
       setIsActionLoading(false);
-      setCooldown(5); // Geri sayımı başlat
+      setCooldown(5);
     }
   };
 
@@ -118,7 +119,7 @@ function GamePage() {
       {/* Orta Sütun: 3D Hologram ve Bilgiler */}
       <div className="flex flex-col items-center justify-center">
         <div className="h-96 w-full flex items-center justify-center">
-          <PetHologram petType={pet.type} effectKey={effectKey} />
+          <PetHologram petType={pet.type} effectType={hologramEffect.type} effectKey={hologramEffect.key} />
         </div>
         <div className="mt-8 text-cyan-300 text-2xl font-bold text-shadow-glow text-center select-none">
           Seviye <span className="text-3xl text-cyan-400 drop-shadow">{pet.level}</span>
