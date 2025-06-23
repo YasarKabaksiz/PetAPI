@@ -43,25 +43,42 @@ function Particles({ color = 'yellow', count = 40, visible }) {
   );
 }
 
-function Model({ modelPath, pulse }) {
+function Model({ modelPath, pulse, rotate, scale = [1,1,1], position = [0, -0.5, 0], isHeadstone = false }) {
   const group = useRef();
   const { scene } = useGLTF(modelPath);
+
+  // Headstone için ilk render'da yönü düz bakacak şekilde ayarla
+  useEffect(() => {
+    if (group.current && isHeadstone) {
+      group.current.rotation.y = -Math.PI / 2; // -90 derece döndür
+    }
+  }, [isHeadstone, modelPath]);
+
   useFrame((state, delta) => {
     if (group.current) {
-      group.current.rotation.y += delta * 0.5;
+      if (rotate) {
+        group.current.rotation.y += delta * 0.5;
+      }
+      // Headstone için canlılık efekti: yavaşça yukarı-aşağı hareket ve hafif dönme
+      if (isHeadstone) {
+        group.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 1.2) * 0.15;
+        group.current.rotation.y += delta * 0.15;
+      } else {
+        group.current.position.set(...position);
+      }
       // Pulse efekti: scale animasyonu
-      const scale = pulse ? 1.15 + 0.1 * Math.sin(state.clock.elapsedTime * 10) : 1;
-      group.current.scale.set(scale, scale, scale);
+      const pulseScale = pulse ? 1.15 + 0.1 * Math.sin(state.clock.elapsedTime * 10) : 1;
+      group.current.scale.set(scale[0] * pulseScale, scale[1] * pulseScale, scale[2] * pulseScale);
     }
   });
   return <primitive ref={group} object={scene} />;
 }
 
-export default function PetHologram({ petType = "Kedi", effectType, effectKey }) {
-  // petType: "Kedi", "Köpek", "Kuş"
-  let modelPath = "/models/cat.glb";
-  if (petType === "Köpek") modelPath = "/models/dog.glb";
-  if (petType === "Kuş") modelPath = "/models/bird.glb";
+export default function PetHologram({ petType = "Kedi", effectType, effectKey, modelName }) {
+  // modelName öncelikli, yoksa petType'a göre model seç
+  let modelFile = modelName || (petType === "Köpek" ? "dog.glb" : petType === "Kuş" ? "bird.glb" : "cat.glb");
+  const modelPath = `/models/${modelFile}`;
+  const isHeadstone = modelFile === 'headstone.glb';
 
   // Efekt state'i
   const [isEffectActive, setEffectActive] = useState(false);
@@ -80,17 +97,32 @@ export default function PetHologram({ petType = "Kedi", effectType, effectKey })
   const effectColor = effectType === 'feed' ? 'lightgreen' : effectType === 'play' ? 'yellow' : 'white';
 
   return (
-    <Canvas camera={{ position: [0, 1.2, 3.5], fov: 40 }} style={{ background: 'transparent' }}>
-      {/* Yumuşak bir ışık ve gölge */}
-      <ambientLight intensity={0.7} />
-      <directionalLight position={[5, 10, 7]} intensity={1.2} castShadow />
+    <Canvas camera={{ position: isHeadstone ? [0, 2, 25] : [0, 1.2, 2.5], fov: 35 }} style={{ background: 'transparent' }}>
+      {/* Kasvetli ışıklandırma headstone için */}
+      {isHeadstone ? (
+        <>
+          <ambientLight intensity={0.3} />
+          <directionalLight position={[0, 5, 2]} intensity={0.5} color="#aaa" />
+        </>
+      ) : (
+        <>
+          <ambientLight intensity={0.7} />
+          <directionalLight position={[5, 10, 7]} intensity={1.2} castShadow />
+        </>
+      )}
       {/* Efekt sırasında kısa süreli ışık parlaması */}
-      {isEffectActive && (
+      {isEffectActive && !isHeadstone && (
         <pointLight position={[0, 1, 0]} intensity={2.5} color={effectColor} decay={2} distance={4} />
       )}
-      <Model modelPath={modelPath} pulse={isEffectActive} />
-      {/* Gerçekçi partikül patlaması */}
-      <Particles color={effectColor} count={effectType === 'play' ? 60 : 40} visible={isEffectActive} />
+      <Model 
+        modelPath={modelPath} 
+        pulse={isEffectActive && !isHeadstone} 
+        rotate={!isHeadstone}
+        scale={isHeadstone ? [2.5,2.5,2.5] : [1,1,1]}
+        position={isHeadstone ? [0, -1.2, 0] : [0, -0.5, 0]}
+        isHeadstone={isHeadstone}
+      />
+      {!isHeadstone && <Particles color={effectColor} count={effectType === 'play' ? 60 : 40} visible={isEffectActive} />}
       {/* Kamera kontrolü */}
       <OrbitControls enableZoom={true} enablePan={true} autoRotate={false} />
     </Canvas>

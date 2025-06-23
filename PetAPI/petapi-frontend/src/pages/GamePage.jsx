@@ -109,6 +109,31 @@ function GamePage() {
 
   // XP ve Level bilgisi
   const xpForNextLevel = pet.level * 100;
+  const isPetAlive = pet && pet.health > 0;
+
+  if (!isPetAlive) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center min-h-[calc(100vh-80px)] p-8 bg-gradient-to-br from-slate-900 to-slate-800">
+        {/* Sol Sütun: Mesaj */}
+        <div className="flex flex-col items-center justify-center">
+          <div className="bg-slate-800/70 rounded-xl p-8 shadow-xl text-center">
+            <h2 className="text-3xl font-bold text-gray-300 mb-4">{pet.name} huzur içinde uyuyor.</h2>
+            <p className="text-gray-400">Evcil hayvanının sağlığı tükendi. Yeni bir pet oluşturabilir veya {pet.name}'u canlandırabilirsin.</p>
+          </div>
+        </div>
+        {/* Orta Sütun: Headstone Hologram */}
+        <div className="flex flex-col items-center justify-center">
+          <div className="h-96 w-full flex items-center justify-center">
+            <PetHologram modelName="headstone.glb" />
+          </div>
+        </div>
+        {/* Sağ Sütun: Yeni Pet Oluşturma */}
+        <div className="flex flex-col items-center justify-center">
+          <CreatePetForm onPetCreated={handlePetCreated} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center min-h-[calc(100vh-80px)] p-8 bg-gradient-to-br from-slate-900 to-slate-800">

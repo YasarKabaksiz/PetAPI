@@ -18,6 +18,27 @@ namespace PetAPI.Services
 
         public async Task<Pet> CreatePetAsync(PetCreateDto petDto, int userId)
         {
+            // Kullanıcının mevcut pet'i var mı?
+            var existingPet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
+            if (existingPet != null)
+            {
+                if (existingPet.Health == 0)
+                {
+                    // Revive: Statüleri sıfırla, isim ve türü güncelle
+                    existingPet.Name = petDto.Name;
+                    existingPet.Type = petDto.Type;
+                    existingPet.Level = 1;
+                    existingPet.Experience = 0;
+                    existingPet.Hunger = 100;
+                    existingPet.Happiness = 100;
+                    existingPet.Health = 100;
+                    await _context.SaveChangesAsync();
+                    return existingPet;
+                }
+                // Eğer pet zaten hayattaysa, yeni pet oluşturulmaz (isteğe göre hata fırlatılabilir)
+                return existingPet;
+            }
+            // Hiç pet yoksa yeni oluştur
             var pet = new Pet
             {
                 Name = petDto.Name,

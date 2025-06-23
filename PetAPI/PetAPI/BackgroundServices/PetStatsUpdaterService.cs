@@ -22,8 +22,8 @@ namespace PetAPI.BackgroundServices
             {
                 try
                 {
-                    // Her 10 saniyede bir çalış (test için, production'da 60 saniye yapılabilir)
-                    await Task.Delay(TimeSpan.FromSeconds(45), stoppingToken);
+                    // Her 5 saniyede bir çalış (test için)
+                    await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
 
                     using var scope = _serviceProvider.CreateScope();
                     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -37,9 +37,24 @@ namespace PetAPI.BackgroundServices
 
                         foreach (var pet in pets)
                         {
+                            // Eğer pet'in sağlığı zaten 0 ise, atla
+                            if (pet.Health == 0)
+                                continue;
+
                             // Hunger ve Happiness değerlerini 1 azalt, ancak 0'ın altına düşürme
                             pet.Hunger = Math.Max(0, pet.Hunger - 1);
                             pet.Happiness = Math.Max(0, pet.Happiness - 1);
+
+                            // Kaybetme ve iyileşme kuralları
+                            if (pet.Hunger == 0 || pet.Happiness == 0)
+                            {
+                                pet.Health = Math.Max(0, pet.Health - 5);
+                            }
+                            else
+                            {
+                                pet.Health = Math.Min(100, pet.Health + 1);
+                            }
+
                             updatedCount++;
                         }
 

@@ -43,7 +43,18 @@ namespace PetAPI.Controllers
                 return Unauthorized("Kullanıcı kimliği bulunamadı.");
 
             var pet = await _petService.CreatePetAsync(petDto, userId);
-            return CreatedAtAction(nameof(CreatePet), new { id = pet.Id }, pet);
+            var petDtoResult = new PetDto
+            {
+                Id = pet.Id,
+                Name = pet.Name,
+                Type = pet.Type,
+                Level = pet.Level,
+                Experience = pet.Experience,
+                Hunger = pet.Hunger,
+                Happiness = pet.Happiness,
+                Health = pet.Health
+            };
+            return CreatedAtAction(nameof(CreatePet), new { id = pet.Id }, petDtoResult);
         }
 
         /// <summary>
