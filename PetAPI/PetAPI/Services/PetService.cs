@@ -120,8 +120,8 @@ namespace PetAPI.Services
         {
             return await _context.Pets
                 .AsNoTracking()
-                .OrderByDescending(p => p.Happiness)
-                .ThenByDescending(p => p.Health)
+                .OrderByDescending(p => p.Level)
+                .ThenByDescending(p => p.Happiness)
                 .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
                 .Take(paginationParams.PageSize)
                 .ToListAsync();

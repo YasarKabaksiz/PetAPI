@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getLeaderboard } from '../services/petService';
-import { FaHeart, FaMedal } from 'react-icons/fa';
+import { FaHeart, FaMedal, FaStar } from 'react-icons/fa';
 
 function LeaderboardPage() {
   const [leaderboardData, setLeaderboardData] = useState([]);
@@ -29,10 +29,10 @@ function LeaderboardPage() {
       <div className="w-full max-w-4xl mx-auto bg-slate-800/50 rounded-xl shadow-lg p-4">
         {/* Başlık Satırı */}
         <div className="grid grid-cols-4 gap-4 px-4 py-2 text-sm font-bold text-gray-400 border-b border-slate-700">
-          <span>Sıra</span>
+          <span>#</span>
           <span>Pet Adı</span>
-          <span>Seviye</span>
-          <span>Mutluluk</span>
+          <span className="text-center">Seviye</span>
+          <span className="text-center">Mutluluk</span>
         </div>
         {/* Yükleniyor durumu */}
         {loading && (
@@ -76,8 +76,8 @@ function LeaderboardPage() {
                 {index + 1}
               </span>
               <span className="font-semibold text-white">{pet.name}</span>
-              <span className="text-cyan-200">Seviye {pet.level}</span>
-              <span className="flex items-center gap-2 text-yellow-400"><FaHeart /> {pet.happiness}</span>
+              <span className="flex items-center justify-center gap-2 font-semibold text-cyan-200"><FaStar /> {pet.level}</span>
+              <span className="flex items-center justify-center gap-2 text-yellow-400"><FaHeart /> {pet.happiness}</span>
             </div>
           );
         })}
