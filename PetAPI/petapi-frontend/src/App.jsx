@@ -6,6 +6,8 @@ import LeaderboardPage from './pages/LeaderboardPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Navbar from './components/Navbar.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
+import StorePage from "./pages/StorePage";
+import InventoryPage from "./pages/InventoryPage";
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardPage /></ProtectedRoute>} />
+            <Route path="/store" element={<StorePage />} />
+            <Route path="/inventory" element={<InventoryPage />} />
             
             {/* 404 - Bilinmeyen yollar için Login'e yönlendir */}
             <Route path="*" element={<Navigate to="/login" replace />} />

@@ -45,5 +45,14 @@ namespace PetAPI.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<object>> GetUserInventoryAsync(int userId)
+        {
+            var inventory = await _context.UserInventories
+                .Include(ui => ui.Item)
+                .Where(ui => ui.UserId == userId)
+                .ToListAsync();
+            return inventory.Select(ui => new { item = ui.Item, quantity = ui.Quantity });
+        }
     }
 } 

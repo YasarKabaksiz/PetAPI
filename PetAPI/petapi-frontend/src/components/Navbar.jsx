@@ -30,6 +30,8 @@ function Navbar() {
             <>
               <Link to="/game" className="hover:text-cyan-400 transition-colors font-medium">Oyun Ekranı</Link>
               <Link to="/leaderboard" className="hover:text-cyan-400 transition-colors font-medium">Liderlik Tablosu</Link>
+              <Link to="/store" className="nav-link">Mağaza</Link>
+              <Link to="/inventory" className="nav-link">Envanter</Link>
               <button
                 onClick={handleLogout}
                 className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white font-semibold ml-2 transition-colors"

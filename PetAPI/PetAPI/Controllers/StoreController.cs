@@ -35,5 +35,16 @@ namespace PetAPI.Controllers
                 return BadRequest("Yetersiz bakiye.");
             return Ok();
         }
+
+        [HttpGet("my-inventory")]
+        public async Task<IActionResult> GetMyInventory()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out int userId))
+                return Unauthorized();
+
+            var inventory = await _storeService.GetUserInventoryAsync(userId);
+            return Ok(inventory);
+        }
     }
 } 
