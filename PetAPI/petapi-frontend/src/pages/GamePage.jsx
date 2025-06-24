@@ -16,7 +16,7 @@ function GamePage() {
   const [isActionLoading, setIsActionLoading] = useState(false); // Besle/Oyna butonu tıklanınca
   const [cooldown, setCooldown] = useState(0); // Butonlar için geri sayım
   const [error, setError] = useState(""); // Hata mesajları için
-  const { user, updateUser } = useContext(AuthContext); // Global kullanıcı bilgileri
+  const { user, setUser, updateUser } = useContext(AuthContext); // Global kullanıcı bilgileri
   const [effectKey, setEffectKey] = useState(0); // Hologram efekt tetikleyici
   const [hologramEffect, setHologramEffect] = useState({ type: null, key: 0 });
   const [gameState, setGameState] = useState('idle'); // idle, playing_feed, playing_play
@@ -59,6 +59,17 @@ function GamePage() {
     setPet(newPet);
   };
 
+  // Mini oyun kazanç hesaplama fonksiyonu
+  const calculateCoins = (score, gameType) => {
+    if (gameType === 'feed') {
+      return Math.floor(score * 0.10);
+    }
+    if (gameType === 'play') {
+      return Math.floor(score * 0.20);
+    }
+    return 0;
+  };
+
   const handleFeedGameEnd = async (score) => {
     setIsActionLoading(true);
     try {
@@ -66,6 +77,14 @@ function GamePage() {
       setPet(updatedPet);
       setError("");
       setHologramEffect(prev => ({ type: 'feed', key: prev.key + 1 }));
+      // Kazanılan coin'i hesapla ve user'ı güncelle
+      if (score > 0 && user) {
+        const coinsEarned = calculateCoins(score, 'feed');
+        setUser(currentUser => ({
+          ...currentUser,
+          coins: (currentUser.coins || 0) + coinsEarned,
+        }));
+      }
     } catch (err) {
       setError(err.message || "Mini oyun sonucu gönderilirken bir hata oluştu.");
     } finally {
@@ -82,6 +101,14 @@ function GamePage() {
       setPet(updatedPet);
       setError("");
       setHologramEffect(prev => ({ type: 'play', key: prev.key + 1 }));
+      // Kazanılan coin'i hesapla ve user'ı güncelle
+      if (score > 0 && user) {
+        const coinsEarned = calculateCoins(score, 'play');
+        setUser(currentUser => ({
+          ...currentUser,
+          coins: (currentUser.coins || 0) + coinsEarned,
+        }));
+      }
     } catch (err) {
       setError(err.message || "Mini oyun sonucu gönderilirken bir hata oluştu.");
     } finally {
