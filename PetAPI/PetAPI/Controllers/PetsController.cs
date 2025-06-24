@@ -133,5 +133,46 @@ namespace PetAPI.Controllers
             var pets = await _petService.GetLeaderboardAsync(paginationParams);
             return Ok(pets);
         }
+
+        [HttpPost("use-item/{itemId}")]
+        public async Task<IActionResult> UseItemOnPet(int itemId)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) ?? User.FindFirst(System.Security.Claims.ClaimTypes.Name);
+                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                    return Unauthorized("Kullanıcı kimliği bulunamadı.");
+
+                var pet = await _petService.UseItemOnPetAsync(userId, itemId);
+                var petDto = new PetAPI.Dtos.Pet.PetDto
+                {
+                    Id = pet.Id,
+                    Name = pet.Name,
+                    Type = pet.Type,
+                    Level = pet.Level,
+                    Experience = pet.Experience,
+                    Hunger = pet.Hunger,
+                    Happiness = pet.Happiness,
+                    Health = pet.Health
+                };
+                return Ok(petDto);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (NotSupportedException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Beklenmedik bir hata oluştu. Lütfen tekrar deneyin." });
+            }
+        }
     }
 }

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 export default function InventoryPage() {
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const fetchInventory = async () => {
     setLoading(true);
@@ -20,6 +22,25 @@ export default function InventoryPage() {
   useEffect(() => {
     fetchInventory();
   }, []);
+
+  const handleUse = async (itemId) => {
+    setError("");
+    try {
+      await api.post(`/Pets/use-item/${itemId}`);
+      window.toast && window.toast.success("Eşya kullanıldı!");
+      await fetchInventory();
+      navigate("/game");
+    } catch (error) {
+      console.error("Eşya kullanılırken hata oluştu:", error.response);
+      if (error.response && error.response.data && error.response.data.message) {
+        setError(error.response.data.message);
+        window.toast && window.toast.error(error.response.data.message);
+      } else {
+        setError("Beklenmedik bir hata oluştu. Lütfen tekrar deneyin.");
+        window.toast && window.toast.error("Beklenmedik bir hata oluştu. Lütfen tekrar deneyin.");
+      }
+    }
+  };
 
   if (loading) return <div className="text-center mt-8 text-cyan-400">Yükleniyor...</div>;
   if (error) return <div className="text-center mt-8 text-red-400">{error}</div>;
@@ -37,7 +58,17 @@ export default function InventoryPage() {
             <div className="flex items-center gap-1 text-yellow-300 font-semibold mb-2">
               <span className="material-icons">paid</span> {inv.item.price}
             </div>
-            <div className="bg-cyan-700 text-white px-3 py-1 rounded mt-auto">x{inv.quantity}</div>
+            <div className="flex items-center gap-2 mt-auto">
+              <div className="bg-cyan-700 text-white px-3 py-1 rounded">x{inv.quantity}</div>
+              {(inv.item.itemType === "Food" || inv.item.itemType === "Toy") && inv.quantity > 0 && (
+                <button
+                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
+                  onClick={() => handleUse(inv.item.id)}
+                >
+                  Kullan
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>

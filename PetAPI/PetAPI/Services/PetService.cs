@@ -182,5 +182,57 @@ namespace PetAPI.Services
             await _context.SaveChangesAsync();
             return pet;
         }
+
+        public async Task<Pet?> UseItemOnPetAsync(int userId, int itemId)
+        {
+            var user = await _context.Users.Include(u => u.Pets).FirstOrDefaultAsync(u => u.Id == userId);
+            var pet = user?.Pets.FirstOrDefault();
+            if (pet == null || pet.Health <= 0)
+            {
+                throw new InvalidOperationException("Bu işlemi yapacak aktif bir evcil hayvanınız yok.");
+            }
+
+            var inventory = await _context.UserInventories.Include(ui => ui.Item).FirstOrDefaultAsync(ui => ui.UserId == userId && ui.ItemId == itemId);
+            if (inventory == null || inventory.Quantity <= 0)
+            {
+                throw new KeyNotFoundException("Bu eşyaya envanterinizde sahip değilsiniz veya tükendi.");
+            }
+
+            var item = inventory.Item;
+            if (item == null)
+            {
+                throw new KeyNotFoundException("Eşya bulunamadı.");
+            }
+
+            int xpGain = 0;
+            switch (item.ItemType)
+            {
+                case "Food":
+                    pet.Hunger = Math.Min(100, pet.Hunger + (item.EffectValue ?? 0));
+                    xpGain = (item.EffectValue ?? 0) / 2;
+                    break;
+                case "Toy":
+                    pet.Happiness = Math.Min(100, pet.Happiness + (item.EffectValue ?? 0));
+                    xpGain = (item.EffectValue ?? 0) / 2;
+                    break;
+                default:
+                    throw new NotSupportedException($"Bu eşya tipi desteklenmiyor: {item.ItemType}");
+            }
+
+            inventory.Quantity -= 1;
+            pet.Experience += xpGain;
+
+            // Seviye atlama kontrolü
+            int xpForNextLevel = LevelingHelper.GetXpForNextLevel(pet.Level);
+            while (pet.Experience >= xpForNextLevel)
+            {
+                pet.Level += 1;
+                pet.Experience -= xpForNextLevel;
+                xpForNextLevel = LevelingHelper.GetXpForNextLevel(pet.Level);
+            }
+
+            await _context.SaveChangesAsync();
+            return pet;
+        }
     }
 }
