@@ -81,4 +81,18 @@ export const getLeaderboard = async (params = {}) => {
   } catch (error) {
     throw new Error(error.response?.data || 'Liderlik tablosu alınırken bir hata oluştu');
   }
+};
+
+/**
+ * Mini oyun sonucunu backend'e gönderir
+ * @param {Object} result - { gameType: string, score: number }
+ * @returns {Promise<Object>} Güncellenmiş pet
+ */
+export const submitMinigameResult = async (result) => {
+  try {
+    const response = await api.post('/pets/submit-minigame', result);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data || 'Mini oyun sonucu gönderilirken bir hata oluştu');
+  }
 }; 

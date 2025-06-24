@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
-import { getMyPet, feedMyPet, playWithMyPet } from "../services/petService"; // petService'in doğru path'de olduğundan emin ol
+import { getMyPet, feedMyPet, playWithMyPet, submitMinigameResult } from "../services/petService"; // petService'in doğru path'de olduğundan emin ol
 import PetStatusCard from "../components/PetStatusCard.jsx";
 import CreatePetForm from "../components/CreatePetForm.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
 import { FaUtensils, FaGamepad } from "react-icons/fa";
 import useInterval from "../hooks/useInterval";
 import PetHologram from "../components/hologram/PetHologram.jsx";
+import CatchTheFoodGame from "../components/minigames/CatchTheFoodGame.jsx";
 
 function GamePage() {
   // --- STATE MANAGEMENT ---
@@ -17,6 +18,7 @@ function GamePage() {
   const { user, updateUser } = useContext(AuthContext); // Global kullanıcı bilgileri
   const [effectKey, setEffectKey] = useState(0); // Hologram efekt tetikleyici
   const [hologramEffect, setHologramEffect] = useState({ type: null, key: 0 });
+  const [gameState, setGameState] = useState('idle'); // idle, playing_feed, playing_play
 
   // --- COOLDOWN GERI SAYIM ---
   useEffect(() => {
@@ -56,22 +58,19 @@ function GamePage() {
     setPet(newPet);
   };
 
-  const handleFeed = async () => {
-    if (isActionLoading || cooldown > 0) return;
+  const handleFeedGameEnd = async (score) => {
     setIsActionLoading(true);
     try {
-      const updatedPet = await feedMyPet();
+      const updatedPet = await submitMinigameResult({ gameType: 'feed', score });
       setPet(updatedPet);
-      if (user) {
-        updateUser(prevUser => ({ ...prevUser, coins: prevUser.coins + 1 }));
-      }
       setError("");
       setHologramEffect(prev => ({ type: 'feed', key: prev.key + 1 }));
     } catch (err) {
-      setError(err.response?.data?.message || "Besleme işlemi sırasında bir hata oluştu.");
+      setError(err.message || "Mini oyun sonucu gönderilirken bir hata oluştu.");
     } finally {
       setIsActionLoading(false);
       setCooldown(5);
+      setGameState('idle');
     }
   };
 
@@ -152,16 +151,20 @@ function GamePage() {
           XP <span className="text-xl text-cyan-200">{pet.experience} / {xpForNextLevel}</span>
         </div>
       </div>
-      {/* Sağ Sütun: Etkileşim Butonları */}
+      {/* Sağ Sütun: Etkileşim Butonları veya Mini Oyun */}
       <div className="flex flex-col items-center justify-center gap-8">
-        <button
-          onClick={handleFeed}
-          disabled={isActionLoading || cooldown > 0}
-          className="w-48 py-4 mb-2 flex items-center justify-center gap-3 bg-cyan-900/60 border border-cyan-500 text-cyan-200 text-lg font-bold rounded-2xl shadow-xl hover:bg-cyan-800/80 hover:border-cyan-400 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
-        >
-          <FaUtensils className="text-2xl" />
-          {cooldown > 0 ? `Bekle (${cooldown}s)` : "Besle"}
-        </button>
+        {gameState === 'playing_feed' ? (
+          <CatchTheFoodGame onGameEnd={handleFeedGameEnd} />
+        ) : (
+          <button
+            onClick={() => setGameState('playing_feed')}
+            disabled={isActionLoading || cooldown > 0}
+            className="w-48 py-4 mb-2 flex items-center justify-center gap-3 bg-cyan-900/60 border border-cyan-500 text-cyan-200 text-lg font-bold rounded-2xl shadow-xl hover:bg-cyan-800/80 hover:border-cyan-400 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
+          >
+            <FaUtensils className="text-2xl" />
+            {cooldown > 0 ? `Bekle (${cooldown}s)` : "Besle (Mini Oyun)"}
+          </button>
+        )}
         <button
           onClick={handlePlay}
           disabled={isActionLoading || cooldown > 0}
