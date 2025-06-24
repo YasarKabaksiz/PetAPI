@@ -67,7 +67,12 @@ namespace PetAPI.Data
                 new Item { Id = 3, Name = "Lezzetli Ödül", Description = "Evcil hayvanın açlığını tamamen giderir.", Price = 50, ItemType = "Food", EffectValue = 100, ImageUrl = "/images/items/tasty-treat.png" },
                 new Item { Id = 4, Name = "Top", Description = "Evcil hayvanın mutluluğunu artırır.", Price = 20, ItemType = "Toy", EffectValue = 20, ImageUrl = "/images/items/ball-toy.png" },
                 new Item { Id = 5, Name = "Kedi Tırmalama Tahtası", Description = "Evcil hayvanın mutluluğunu büyük oranda artırır.", Price = 45, ItemType = "Toy", EffectValue = 50, ImageUrl = "/images/items/scratching-post.png" },
-                new Item { Id = 6, Name = "Peluş Oyuncak", Description = "Evcil hayvanın mutluluğunu tamamen artırır.", Price = 80, ItemType = "Toy", EffectValue = 100, ImageUrl = "/images/items/plush-toy.png" }
+                new Item { Id = 6, Name = "Peluş Oyuncak", Description = "Evcil hayvanın mutluluğunu tamamen artırır.", Price = 80, ItemType = "Toy", EffectValue = 100, ImageUrl = "/images/items/plush-toy.png" },
+                // Dekorasyon eşyaları
+                new Item { Id = 7, Name = "Yıldızlı Gece Duvarı", Description = "Geceleri yıldızlarla dolu güzel bir duvar kağıdı.", Price = 100, ItemType = "Decoration", PlacementArea = "Wall", ImageUrl = "/images/items/starry-wall.png" },
+                new Item { Id = 8, Name = "Orman Manzarası Duvarı", Description = "Yeşil orman manzarası ile huzurlu bir atmosfer.", Price = 120, ItemType = "Decoration", PlacementArea = "Wall", ImageUrl = "/images/items/forest-wall.png" },
+                new Item { Id = 9, Name = "Ahşap Parke", Description = "Doğal ahşap parke zemin.", Price = 80, ItemType = "Decoration", PlacementArea = "Floor", ImageUrl = "/images/items/wooden-floor.png" },
+                new Item { Id = 10, Name = "Yumuşak Halı", Description = "Sıcak ve yumuşak halı zemin.", Price = 90, ItemType = "Decoration", PlacementArea = "Floor", ImageUrl = "/images/items/soft-carpet.png" }
             );
         }
     }

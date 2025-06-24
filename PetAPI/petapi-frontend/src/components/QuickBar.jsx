@@ -1,12 +1,14 @@
 import React from 'react';
 
 export default function QuickBar({ inventory, onItemUse }) {
-  // Sadece Food ve Toy tipi eşyaları filtrele
+  // Food ve Toy tipi eşyaları filtrele
   const usableItems = inventory.filter(inv => 
     (inv.item.itemType === "Food" || inv.item.itemType === "Toy") && inv.quantity > 0
   );
 
-  if (usableItems.length === 0) {
+  const hasUsableItems = usableItems.length > 0;
+
+  if (!hasUsableItems) {
     return (
       <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-600">
         <p className="text-gray-400 text-sm text-center">Kullanılabilir eşya yok</p>

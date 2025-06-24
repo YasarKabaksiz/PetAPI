@@ -49,12 +49,15 @@ namespace PetAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PlacementArea")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Items");
+                    b.ToTable("Items", (string)null);
 
                     b.HasData(
                         new
@@ -116,6 +119,46 @@ namespace PetAPI.Migrations
                             ItemType = "Toy",
                             Name = "Peluş Oyuncak",
                             Price = 80
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Description = "Geceleri yıldızlarla dolu güzel bir duvar kağıdı.",
+                            ImageUrl = "/images/items/starry-wall.png",
+                            ItemType = "Decoration",
+                            Name = "Yıldızlı Gece Duvarı",
+                            PlacementArea = "Wall",
+                            Price = 100
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Description = "Yeşil orman manzarası ile huzurlu bir atmosfer.",
+                            ImageUrl = "/images/items/forest-wall.png",
+                            ItemType = "Decoration",
+                            Name = "Orman Manzarası Duvarı",
+                            PlacementArea = "Wall",
+                            Price = 120
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Description = "Doğal ahşap parke zemin.",
+                            ImageUrl = "/images/items/wooden-floor.png",
+                            ItemType = "Decoration",
+                            Name = "Ahşap Parke",
+                            PlacementArea = "Floor",
+                            Price = 80
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Description = "Sıcak ve yumuşak halı zemin.",
+                            ImageUrl = "/images/items/soft-carpet.png",
+                            ItemType = "Decoration",
+                            Name = "Yumuşak Halı",
+                            PlacementArea = "Floor",
+                            Price = 90
                         });
                 });
 
@@ -128,6 +171,9 @@ namespace PetAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Experience")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FloorItemId")
                         .HasColumnType("int");
 
                     b.Property<int>("Happiness")
@@ -161,11 +207,14 @@ namespace PetAPI.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("WallItemId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Pets");
+                    b.ToTable("Pets", (string)null);
                 });
 
             modelBuilder.Entity("PetAPI.Entities.User", b =>
@@ -200,7 +249,7 @@ namespace PetAPI.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("PetAPI.Entities.UserInventory", b =>
@@ -220,7 +269,7 @@ namespace PetAPI.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("UserInventories");
+                    b.ToTable("UserInventories", (string)null);
                 });
 
             modelBuilder.Entity("PetAPI.Entities.Pet", b =>

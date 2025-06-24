@@ -43,7 +43,7 @@ export default function StorePage() {
     <div className="max-w-4xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4 text-cyan-300">Mağaza</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {items.map((item) => (
+        {items.filter(item => item.itemType !== "Decoration").map((item) => (
           <div key={item.id} className="bg-slate-800 rounded-lg shadow p-4 flex flex-col items-center transition-transform duration-200 hover:scale-105 hover:shadow-cyan-500/50">
             <img src={item.imageUrl} alt={item.name} className="w-24 h-24 mx-auto object-contain mb-3 drop-shadow-lg" />
             <div className="font-bold text-lg text-cyan-200 mb-1">{item.name}</div>

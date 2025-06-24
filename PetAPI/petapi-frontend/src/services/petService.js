@@ -122,4 +122,18 @@ export const useItemOnPet = async (itemId) => {
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Eşya kullanılırken bir hata oluştu');
   }
+};
+
+/**
+ * Oda dekorasyonunu günceller
+ * @param {number} itemId - Kullanılacak dekorasyon eşyasının ID'si
+ * @returns {Promise<Object>} İşlem sonucu
+ */
+export const decorateRoom = async (itemId) => {
+  try {
+    const response = await api.post(`/Pets/decorate/${itemId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Dekorasyon uygulanırken bir hata oluştu');
+  }
 }; 

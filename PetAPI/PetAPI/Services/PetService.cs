@@ -56,6 +56,7 @@ namespace PetAPI.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.UserId == userId);
             if (pet == null) return null;
+            
             return new PetDto
             {
                 Id = pet.Id,

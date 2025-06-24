@@ -1,0 +1,39 @@
+Her zaman SOLID prensiplerini göz önünde bulundur. Özellikle Tek Sorumluluk Prensibi (Single Responsibility) ve Bağımlılığın Tersine Çevrilmesi (Dependency Inversion) prensiplerine sıkı sıkıya bağlı kal.Her zaman SOLID prensiplerini göz önünde bulundur. Özellikle Tek Sorumluluk Prensibi (Single Responsibility) ve Bağımlılığın Tersine Çevrilmesi (Dependency Inversion) prensiplerine sıkı sıkıya bağlı kal.
+Veritabanı erişimi ve iş mantığı (business logic) asla Controller katmanında yer almamalıdır. Tüm bu işlemler, Services klasöründeki servis sınıflarında (PetService, UserService vb.) ve bu sınıfların arayüzleri (IPetService) aracılığıyla yapılmalıdır. Controller'lar sadece HTTP isteklerini alıp ilgili servisi çağırmak ve cevabı HTTP formatına dönüştürmekle görevlidir.
+API'nin dış dünya ile iletişime geçtiği her noktada DTO'lar kullanılacaktır. Entity sınıfları (User, Pet) asla API sınırlarının dışına çıkmamalıdır. İstekler için ...CreateDto, ...UpdateDto; yanıtlar için ...ViewDto gibi isimlendirme standartları kullanılacaktır. Veri doğrulama (Data Annotations) sadece DTO'lar üzerinde yapılmalıdır.
+Veritabanı erişimi, dosya işlemleri veya herhangi bir I/O işlemi içeren tüm metotlar istisnasız olarak async olmalı ve await ile çağrılmalıdır. Metot isimleri ...Async sonekiyle bitmelidir (örn: GetPetByIdAsync).
+Tüm değişkenler, metotlar, sınıflar ve arayüzler için standart .NET isimlendirme kurallarına uy. (camelCase yerel değişkenler için, PascalCase diğer her şey için, arayüzler için I öneki vb.).
+x, temp, data gibi anlamsız isimler yerine, değişkenin veya metodun amacını açıkça belirten isimler kullan (petToFeed, GetAllActiveUsersAsync).
+Kodun "ne yaptığını" değil, "neden yaptığını" açıklayan yorumlar ekle. Karmaşık bir algoritma veya standart dışı bir çözüm varsa, nedenini mutlaka bir yorum satırıyla belirt.
+Tüm dosyaların doğru namespace içinde olduğundan ve gereksiz using ifadelerinin kaldırıldığından emin ol.
+Entity Framework Core zaten bunu otomatik yapar, ancak ham SQL sorguları yazman gerekirse, SQL Injection saldırılarını önlemek için mutlaka parametreli sorgular kullan.
+API yanıtlarında asla PasswordHash gibi hassas verileri döndürme. Yanıt DTO'ları bu tür verileri içermemelidir.
+[Authorize] attribute'u varsayılan olarak tüm hassas controller'lara uygulanmalıdır. Gerekirse, metot bazında [AllowAnonymous] veya rol bazlı yetkilendirme ([Authorize(Roles = "Admin")]) kullanılabilir. Bir kullanıcının sadece kendi verilerine erişebildiğinden emin ol (örn: "get my pet" endpoint'i, JWT'den gelen kullanıcı ID'sini kullanarak doğru hayvanı getirmelidir).
+Tüm kullanıcı girdilerini (DTO'lar aracılığıyla) hem tür hem de içerik olarak doğrula. Beklenmedik girdilere karşı sistemi koru.
+Beklenmedik hatalar için oluşturduğumuz GlobalExceptionHandlerMiddleware kullanılacaktır. Servis katmanında bilerek ve isteyerek fırlatılan özel exception'lar (örn: PetNotFoundException) dışında, try-catch bloklarını minimumda tut.
+Kullanıcıya dönen hata mesajları, sistemin iç yapısını ifşa etmemeli ancak sorunu anlayabileceği kadar bilgi vermelidir. "Object reference not set to an instance of an object" gibi hatalar kullanıcıya asla gösterilmemelidir.
+Tüm önemli olaylar (bir işlemin başlangıcı/bitişi, önemli kararlar) ve özellikle tüm hatalar, Serilog kullanılarak yapısal bir formatta loglanmalıdır. Log mesajları, sorunu teşhis etmek için yeterli bağlamı (context) içermelidir (örn: hangi kullanıcı, hangi metotta, hangi veriyle hata aldı).
+Gereksiz yere tüm tabloyu çekmekten kaçın. Where, Select gibi ifadelerle sorguyu veritabanı tarafında filtrele. Select kullanarak sadece ihtiyaç duyulan kolonları çek (AutoMapper veya manuel mapping ile DTO'lara dönüştür).
+Döngü içinde veritabanı sorgusu yapmaktan kaçın. Gerektiğinde Include veya ThenInclude kullanarak ilişkili verileri tek bir sorguda verimli bir şekilde çek.
+Sadece veri okuma işlemi yapılan sorgularda (GET istekleri), performansı artırmak için .AsNoTracking() metodunu kullan.
+Uygulama, küçük, bağımsız ve yeniden kullanılabilir bileşenlerden (components) oluşmalıdır. Tek bir dosyada binlerce satır kod olmamalıdır.
+Tekrar eden UI parçaları (buton, kart, input alanı gibi) kendi bileşen dosyalarına ayrılmalıdır.
+Proje, src klasörü altında components, pages, services, hooks, contexts, utils ve styles gibi mantıksal ve standart klasörlere ayrılmalıdır.
+Her bileşen veya fonksiyon sadece tek bir iş yapmalıdır. Örneğin, veri çeken bir bileşen, aynı zamanda o veriyi ekranda gösterme mantığını da içerebilir ama API çağrısının kendisi services katmanında olmalıdır.
+Tüm bileşenler, class component'ler yerine Fonksiyonel Bileşenler (Functional Components) olarak yazılmalıdır.
+Durum (state) yönetimi ve yan etkiler (side effects) için kesinlikle React Hooks (useState, useEffect, useContext vb.) kullanılmalıdır.
+Tüm backend API çağrıları, src/services klasörü altındaki dosyalarda merkezileştirilmelidir. Bileşenlerin içinden doğrudan axios veya fetch çağrısı yapılmamalıdır.
+API temel URL'i ve token ekleme gibi genel ayarlar için merkezi bir axios instance'ı oluşturulup kullanılmalıdır.
+Basit bileşenler için yerel durum (useState) yeterlidir.
+Uygulama genelinde paylaşılması gereken durumlar (kullanıcı bilgileri, token gibi) için Context API (useContext) kullanılmalıdır. Proje karmaşıklaştıkça Redux veya Zustand gibi kütüphaneler düşünülebilir ama bu proje için Context API yeterlidir.
+Uygulama içi sayfa geçişleri için react-router-dom kütüphanesi kullanılmalıdır. Statik linkler yerine <Link> bileşeni, programatik yönlendirmeler için useNavigate hook'u tercih edilmelidir.
+Oluşturulan arayüz, hem masaüstü hem de mobil cihaz ekranlarında düzgün görünmelidir. Bunun için modern CSS teknikleri (Flexbox, Grid) veya bir CSS framework'ü kullanılmalıdır.
+API'den veri beklenirken kullanıcıya bir yükleniyor durumu (loading spinner, iskelet ekran) gösterilmelidir.
+Bir API çağrısı başarısız olduğunda, kullanıcıya anlaşılır bir hata mesajı gösterilmelidir.
+Bir işlem (kayıt, giriş, pet besleme) başarıyla tamamlandığında, kullanıcıya bir başarı bildirimi (toast notification veya basit bir mesaj) gösterilebilir.
+Kullanıcı girdisi alan formlarda, frontend tarafında da temel doğrulamalar yapılmalıdır (örneğin, şifre alanının boş bırakılmaması). Bu, gereksiz API isteklerini önler.
+Hatalı giriş yapıldığında, ilgili input alanının altında veya yanında kullanıcıya yol gösteren bir hata mesajı belirtilmelidir.
+Değişken ve fonksiyon isimleri, ne işe yaradıklarını açıkça anlatan, kendi kendini belgeleyen (self-documenting) isimler olmalıdır. (Örn: fetchUserData yerine fetchLoggedInUserPetData).
+Karmaşık mantık içeren kod bloklarına açıklayıcı yorum satırları (// Bu fonksiyon...) eklenmelidir.
+Kullanıcıdan gelen ve ekrana basılacak veriler (eğer varsa) XSS (Cross-Site Scripting) saldırılarına karşı sanitize edilmelidir (React bunu büyük ölçüde kendisi yapar ama bilinçli olmak önemlidir).
+Hassas bilgiler (API anahtarları vb.) asla frontend kodunun içine gömülmemelidir. Bu tür anahtarlar .env dosyalarında saklanmalı ve build sürecinde kullanılmalıdır.
