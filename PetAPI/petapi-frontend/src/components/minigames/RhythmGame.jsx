@@ -15,21 +15,6 @@ function getRandomLane() {
 
 let tileId = 0;
 
-// Dinamik hız fonksiyonu (frameCount'a göre)
-function getCurrentSpeed(frameCount) {
-  if (frameCount < 300) return 4; // ilk ~5 sn
-  if (frameCount < 600) return 6; // 5-10 sn
-  if (frameCount < 1200) return 8; // 10-20 sn
-  return 10; // 20. sn ve sonrası
-}
-// Dinamik karo ekleme aralığı (frameCount'a göre)
-function getTileInterval(frameCount) {
-  if (frameCount < 300) return 32;
-  if (frameCount < 600) return 26;
-  if (frameCount < 1200) return 20;
-  return 15;
-}
-
 export default function RhythmGame({ onGameEnd }) {
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
@@ -37,14 +22,24 @@ export default function RhythmGame({ onGameEnd }) {
   const [tiles, setTiles] = useState([]); // {id, lane, y, status}
   const [gameOver, setGameOver] = useState(false);
   const [hitEffect, setHitEffect] = useState({}); // {tileId: true}
+  const [difficulty, setDifficulty] = useState(1);
   const frameCount = useRef(0);
+
+  // Hız ve interval artık difficulty'ye bağlı
+  const baseSpeed = 4;
+  const baseInterval = 32;
+  const tileSpeed = baseSpeed + (difficulty - 1) * 1.1; // yavaş yavaş artar
+  const tileInterval = Math.max(12, Math.floor(baseInterval - (difficulty - 1) * 2)); // min 12
+
+  // Difficulty artışı (her 3 saniyede bir 0.2 artar)
+  useInterval(() => {
+    setDifficulty(d => +(d + 0.2).toFixed(2));
+  }, !gameOver ? 3000 : null);
 
   useInterval(() => {
     frameCount.current++;
-    const speed = getCurrentSpeed(frameCount.current);
-    const tileInterval = getTileInterval(frameCount.current);
     // Karoları hareket ettir
-    setTiles(prev => prev.map(tile => ({ ...tile, y: tile.y + speed })));
+    setTiles(prev => prev.map(tile => ({ ...tile, y: tile.y + tileSpeed })));
     // Belirli aralıklarla yeni karo ekle
     if (frameCount.current % tileInterval === 0) {
       setTiles(prev => [
@@ -99,7 +94,7 @@ export default function RhythmGame({ onGameEnd }) {
   return (
     <div className="flex flex-col items-center">
       <div className="mb-2 text-lg font-bold text-yellow-300">Ritim Oyunu (Piano Tiles)</div>
-      <div className="mb-2 text-gray-200">Skor: <span className="font-mono">{score}</span> | Combo: <span className="font-mono">{combo}</span> | Kaçan: <span className="font-mono">{missed} / {MAX_MISSED}</span></div>
+      <div className="mb-2 text-gray-200">Skor: <span className="font-mono">{score}</span> | Combo: <span className="font-mono">{combo}</span> | Kaçan: <span className="font-mono">{missed} / {MAX_MISSED}</span> | Zorluk: <span className='font-mono'>{difficulty.toFixed(1)}</span></div>
       <div
         className="relative bg-slate-800 rounded-xl border-2 border-yellow-400 overflow-hidden select-none"
         style={{ width: GAME_WIDTH, height: GAME_HEIGHT }}
