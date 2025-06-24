@@ -95,4 +95,31 @@ export const submitMinigameResult = async (result) => {
   } catch (error) {
     throw new Error(error.response?.data || 'Mini oyun sonucu gönderilirken bir hata oluştu');
   }
+};
+
+/**
+ * Kullanıcının envanterini getirir
+ * @returns {Promise<Array>} Envanter listesi
+ */
+export const getUserInventory = async () => {
+  try {
+    const response = await api.get('/Store/my-inventory');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data || 'Envanter alınırken bir hata oluştu');
+  }
+};
+
+/**
+ * Pet üzerinde eşya kullanır
+ * @param {number} itemId - Kullanılacak eşyanın ID'si
+ * @returns {Promise<Object>} Güncellenmiş pet
+ */
+export const useItemOnPet = async (itemId) => {
+  try {
+    const response = await api.post(`/Pets/use-item/${itemId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Eşya kullanılırken bir hata oluştu');
+  }
 }; 

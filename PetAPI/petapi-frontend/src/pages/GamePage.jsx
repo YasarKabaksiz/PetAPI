@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { getMyPet, feedMyPet, playWithMyPet, submitMinigameResult } from "../services/petService"; // petService'in doğru path'de olduğundan emin ol
+import { getMyPet, feedMyPet, playWithMyPet, submitMinigameResult, getUserInventory, useItemOnPet } from "../services/petService"; // petService'in doğru path'de olduğundan emin ol
 import PetStatusCard from "../components/PetStatusCard.jsx";
 import CreatePetForm from "../components/CreatePetForm.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
@@ -8,10 +8,12 @@ import useInterval from "../hooks/useInterval";
 import PetHologram from "../components/hologram/PetHologram.jsx";
 import CatchTheFoodGame from "../components/minigames/CatchTheFoodGame.jsx";
 import RhythmGame from "../components/minigames/RhythmGame.jsx";
+import QuickBar from "../components/QuickBar.jsx";
 
 function GamePage() {
   // --- STATE MANAGEMENT ---
   const [pet, setPet] = useState(null); // Mevcut evcil hayvan verisi
+  const [inventory, setInventory] = useState([]); // Kullanıcının envanteri
   const [isLoading, setIsLoading] = useState(true); // Sayfa ilk yüklenirken
   const [isActionLoading, setIsActionLoading] = useState(false); // Besle/Oyna butonu tıklanınca
   const [cooldown, setCooldown] = useState(0); // Butonlar için geri sayım
@@ -30,13 +32,17 @@ function GamePage() {
     return () => clearTimeout(timer);
   }, [cooldown]);
 
-  // --- PET VERİSİNİ ÇEKEN ANA FONKSİYON ---
+  // --- PET VE ENVANTER VERİSİNİ ÇEKEN ANA FONKSİYON ---
   const fetchPetData = async () => {
     try {
-      const petData = await getMyPet();
+      const [petData, inventoryData] = await Promise.all([
+        getMyPet(),
+        getUserInventory()
+      ]);
       setPet(petData);
+      setInventory(inventoryData);
     } catch (error) {
-      console.error("Pet verisi çekilirken hata oluştu:", error);
+      console.error("Veri çekilirken hata oluştu:", error);
       // İsteğe bağlı: Kullanıcıya bilgi verecek bir state ayarlanabilir.
     }
   };
@@ -57,6 +63,22 @@ function GamePage() {
   // --- EVENT HANDLERS ---
   const handlePetCreated = (newPet) => {
     setPet(newPet);
+  };
+
+  // Eşya kullanma fonksiyonu
+  const handleItemUse = async (itemId) => {
+    try {
+      const updatedPet = await useItemOnPet(itemId);
+      setPet(updatedPet);
+      setError("");
+      setHologramEffect(prev => ({ type: 'item_use', key: prev.key + 1 }));
+      // Envanteri güncelle
+      await fetchPetData();
+      window.toast && window.toast.success("Eşya kullanıldı!");
+    } catch (err) {
+      setError(err.message || "Eşya kullanılırken bir hata oluştu.");
+      window.toast && window.toast.error(err.message || "Eşya kullanılırken bir hata oluştu.");
+    }
   };
 
   // Mini oyun kazanç hesaplama fonksiyonu
@@ -85,6 +107,8 @@ function GamePage() {
           coins: (currentUser.coins || 0) + coinsEarned,
         }));
       }
+      // Envanteri güncelle
+      await fetchPetData();
     } catch (err) {
       setError(err.message || "Mini oyun sonucu gönderilirken bir hata oluştu.");
     } finally {
@@ -109,6 +133,8 @@ function GamePage() {
           coins: (currentUser.coins || 0) + coinsEarned,
         }));
       }
+      // Envanteri güncelle
+      await fetchPetData();
     } catch (err) {
       setError(err.message || "Mini oyun sonucu gönderilirken bir hata oluştu.");
     } finally {
@@ -200,6 +226,8 @@ function GamePage() {
               <FaGamepad className="text-xl" />
               <span>{cooldown > 0 ? `Bekle (${cooldown}s)` : "Oyna (Ritim Oyunu)"}</span>
             </button>
+            {/* Hızlı Kullanım Barı */}
+            <QuickBar inventory={inventory} onItemUse={handleItemUse} />
           </>
         )}
         {error && <div className="text-red-400 text-center mt-4 bg-red-900/50 p-3 rounded-lg w-64">{error}</div>}
