@@ -7,6 +7,7 @@ import { FaUtensils, FaGamepad } from "react-icons/fa";
 import useInterval from "../hooks/useInterval";
 import PetHologram from "../components/hologram/PetHologram.jsx";
 import CatchTheFoodGame from "../components/minigames/CatchTheFoodGame.jsx";
+import RhythmGame from "../components/minigames/RhythmGame.jsx";
 
 function GamePage() {
   // --- STATE MANAGEMENT ---
@@ -74,22 +75,19 @@ function GamePage() {
     }
   };
 
-  const handlePlay = async () => {
-    if (isActionLoading || cooldown > 0) return;
+  const handlePlayGameEnd = async (score) => {
     setIsActionLoading(true);
     try {
-      const updatedPet = await playWithMyPet();
+      const updatedPet = await submitMinigameResult({ gameType: 'play', score });
       setPet(updatedPet);
-      if (user) {
-        updateUser(prevUser => ({ ...prevUser, coins: prevUser.coins + 2 }));
-      }
       setError("");
       setHologramEffect(prev => ({ type: 'play', key: prev.key + 1 }));
     } catch (err) {
-      setError(err.response?.data?.message || "Oyun oynama işlemi sırasında bir hata oluştu.");
+      setError(err.message || "Mini oyun sonucu gönderilirken bir hata oluştu.");
     } finally {
       setIsActionLoading(false);
       setCooldown(5);
+      setGameState('idle');
     }
   };
 
@@ -155,24 +153,28 @@ function GamePage() {
       <div className="flex flex-col items-center justify-center gap-8">
         {gameState === 'playing_feed' ? (
           <CatchTheFoodGame onGameEnd={handleFeedGameEnd} />
+        ) : gameState === 'playing_play' ? (
+          <RhythmGame onGameEnd={handlePlayGameEnd} />
         ) : (
-          <button
-            onClick={() => setGameState('playing_feed')}
-            disabled={isActionLoading || cooldown > 0}
-            className="w-48 py-4 mb-2 flex items-center justify-center gap-3 bg-cyan-900/60 border border-cyan-500 text-cyan-200 text-lg font-bold rounded-2xl shadow-xl hover:bg-cyan-800/80 hover:border-cyan-400 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
-          >
-            <FaUtensils className="text-2xl" />
-            {cooldown > 0 ? `Bekle (${cooldown}s)` : "Besle (Mini Oyun)"}
-          </button>
+          <>
+            <button
+              onClick={() => setGameState('playing_feed')}
+              disabled={isActionLoading || cooldown > 0}
+              className="w-48 py-4 mb-2 flex items-center justify-center gap-3 bg-cyan-900/60 border border-cyan-500 text-cyan-200 text-lg font-bold rounded-2xl shadow-xl hover:bg-cyan-800/80 hover:border-cyan-400 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
+            >
+              <FaUtensils className="text-2xl" />
+              {cooldown > 0 ? `Bekle (${cooldown}s)` : "Besle (Mini Oyun)"}
+            </button>
+            <button
+              onClick={() => setGameState('playing_play')}
+              disabled={isActionLoading || cooldown > 0}
+              className="w-48 py-4 flex items-center justify-center gap-3 bg-cyan-900/60 border border-cyan-500 text-cyan-200 text-lg font-bold rounded-2xl shadow-xl hover:bg-cyan-800/80 hover:border-cyan-400 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
+            >
+              <FaGamepad className="text-2xl" />
+              {cooldown > 0 ? `Bekle (${cooldown}s)` : "Oyna (Ritim Oyunu)"}
+            </button>
+          </>
         )}
-        <button
-          onClick={handlePlay}
-          disabled={isActionLoading || cooldown > 0}
-          className="w-48 py-4 flex items-center justify-center gap-3 bg-cyan-900/60 border border-cyan-500 text-cyan-200 text-lg font-bold rounded-2xl shadow-xl hover:bg-cyan-800/80 hover:border-cyan-400 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
-        >
-          <FaGamepad className="text-2xl" />
-          {cooldown > 0 ? `Bekle (${cooldown}s)` : "Oyna"}
-        </button>
         {error && <div className="text-red-400 text-center mt-4 bg-red-900/50 p-3 rounded-lg w-48">{error}</div>}
       </div>
     </div>
