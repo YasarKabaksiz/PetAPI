@@ -147,5 +147,40 @@ namespace PetAPI.Services
                 .Take(paginationParams.PageSize)
                 .ToListAsync();
         }
+
+        public async Task<Pet> SubmitMinigameResultAsync(int userId, SubmitMinigameResultDto resultDto)
+        {
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (pet == null || user == null) return null!;
+
+            switch (resultDto.GameType.ToLower())
+            {
+                case "feed":
+                    pet.Hunger = Math.Min(100, pet.Hunger + resultDto.Score);
+                    pet.Experience += (int)Math.Round(resultDto.Score * 0.5);
+                    user.Coins += (int)Math.Round(resultDto.Score * 0.1);
+                    break;
+                case "play":
+                    pet.Happiness = Math.Min(100, pet.Happiness + resultDto.Score);
+                    pet.Experience += (int)Math.Round(resultDto.Score * 0.75);
+                    user.Coins += (int)Math.Round(resultDto.Score * 0.2);
+                    break;
+                default:
+                    break;
+            }
+
+            // Seviye atlama kontrolü
+            int xpForNextLevel = LevelingHelper.GetXpForNextLevel(pet.Level);
+            while (pet.Experience >= xpForNextLevel)
+            {
+                pet.Level += 1;
+                pet.Experience -= xpForNextLevel;
+                xpForNextLevel = LevelingHelper.GetXpForNextLevel(pet.Level);
+            }
+
+            await _context.SaveChangesAsync();
+            return pet;
+        }
     }
 }

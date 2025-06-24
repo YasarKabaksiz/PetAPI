@@ -85,57 +85,33 @@ namespace PetAPI.Controllers
         }
 
         /// <summary>
-        /// Evcil hayvanı besler ve açlık değerini artırır
+        /// Mini oyun sonucunu işler
         /// </summary>
+        /// <param name="resultDto">Mini oyun sonucu</param>
         /// <returns>Güncellenmiş evcil hayvan bilgileri</returns>
-        /// <response code="200">Evcil hayvan başarıyla beslendi</response>
-        /// <response code="401">Kimlik doğrulama gerekli</response>
-        /// <response code="404">Kullanıcıya ait evcil hayvan bulunamadı</response>
-        [HttpPost("feed")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PetDto>> FeedPet()
+        [HttpPost("submit-minigame")]
+        public async Task<ActionResult<PetDto>> SubmitMinigameResult([FromBody] SubmitMinigameResultDto resultDto)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst(ClaimTypes.Name);
             if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
                 return Unauthorized("Kullanıcı kimliği bulunamadı.");
 
-            var pet = await _petService.FeedPetAsync(userId);
-
+            var pet = await _petService.SubmitMinigameResultAsync(userId, resultDto);
             if (pet == null)
-            {
                 return NotFound("Size ait bir evcil hayvan bulunamadı.");
-            }
 
-            return Ok(pet);
-        }
-
-        /// <summary>
-        /// Evcil hayvanla oyun oynar ve mutluluk değerini artırır
-        /// </summary>
-        /// <returns>Güncellenmiş evcil hayvan bilgileri</returns>
-        /// <response code="200">Evcil hayvanla başarıyla oyun oynandı</response>
-        /// <response code="401">Kimlik doğrulama gerekli</response>
-        /// <response code="404">Kullanıcıya ait evcil hayvan bulunamadı</response>
-        [HttpPost("play")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PetDto>> PlayWithPet()
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst(ClaimTypes.Name);
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-                return Unauthorized("Kullanıcı kimliği bulunamadı.");
-
-            var pet = await _petService.PlayWithPetAsync(userId);
-
-            if (pet == null)
+            var petDtoResult = new PetDto
             {
-                return NotFound("Size ait bir evcil hayvan bulunamadı.");
-            }
-
-            return Ok(pet);
+                Id = pet.Id,
+                Name = pet.Name,
+                Type = pet.Type,
+                Level = pet.Level,
+                Experience = pet.Experience,
+                Hunger = pet.Hunger,
+                Happiness = pet.Happiness,
+                Health = pet.Health
+            };
+            return Ok(petDtoResult);
         }
 
         /// <summary>
