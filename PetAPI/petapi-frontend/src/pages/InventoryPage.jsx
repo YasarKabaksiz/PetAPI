@@ -51,18 +51,18 @@ export default function InventoryPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {inventory.length === 0 && <div className="col-span-full text-gray-400">Envanterin boş.</div>}
         {inventory.map((inv) => (
-          <div key={inv.item.id} className="bg-slate-800 rounded-lg shadow p-4 flex flex-col items-center">
-            <img src={inv.item.imageUrl} alt={inv.item.name} className="w-20 h-20 object-contain mb-2" />
-            <div className="font-bold text-lg text-cyan-200">{inv.item.name}</div>
-            <div className="text-gray-300 text-sm mb-1">{inv.item.description}</div>
-            <div className="flex items-center gap-1 text-yellow-300 font-semibold mb-2">
+          <div key={inv.item.id} className="bg-slate-800 rounded-lg shadow p-4 flex flex-col items-center transition-transform duration-200 hover:scale-105 hover:shadow-cyan-500/50">
+            <img src={inv.item.imageUrl} alt={inv.item.name} className="w-24 h-24 mx-auto object-contain mb-3 drop-shadow-lg" />
+            <div className="font-bold text-lg text-cyan-200 mb-1">{inv.item.name}</div>
+            <div className="text-gray-300 text-sm mb-2 text-center">{inv.item.description}</div>
+            <div className="flex items-center gap-1 bg-yellow-400/90 text-yellow-900 font-bold px-3 py-1 rounded-full text-lg mb-3 shadow">
               <span className="material-icons">paid</span> {inv.item.price}
             </div>
             <div className="flex items-center gap-2 mt-auto">
-              <div className="bg-cyan-700 text-white px-3 py-1 rounded">x{inv.quantity}</div>
+              <div className="bg-cyan-500/90 text-white font-bold px-4 py-1 rounded-full text-lg shadow">x{inv.quantity}</div>
               {(inv.item.itemType === "Food" || inv.item.itemType === "Toy") && inv.quantity > 0 && (
                 <button
-                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
+                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded font-semibold shadow"
                   onClick={() => handleUse(inv.item.id)}
                 >
                   Kullan
