@@ -150,7 +150,7 @@ function GamePage() {
         </div>
       </div>
       {/* Sağ Sütun: Etkileşim Butonları veya Mini Oyun */}
-      <div className="flex flex-col items-center justify-center gap-8">
+      <div className="flex flex-col items-center justify-center space-y-6">
         {gameState === 'playing_feed' ? (
           <CatchTheFoodGame onGameEnd={handleFeedGameEnd} />
         ) : gameState === 'playing_play' ? (
@@ -160,22 +160,22 @@ function GamePage() {
             <button
               onClick={() => setGameState('playing_feed')}
               disabled={isActionLoading || cooldown > 0}
-              className="w-48 py-4 mb-2 flex items-center justify-center gap-3 bg-cyan-900/60 border border-cyan-500 text-cyan-200 text-lg font-bold rounded-2xl shadow-xl hover:bg-cyan-800/80 hover:border-cyan-400 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
+              className="w-64 flex items-center justify-center gap-x-3 px-4 py-4 font-bold text-white bg-green-500 rounded-xl shadow-lg transform transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <FaUtensils className="text-2xl" />
-              {cooldown > 0 ? `Bekle (${cooldown}s)` : "Besle (Mini Oyun)"}
+              <FaUtensils className="text-xl" />
+              <span>{cooldown > 0 ? `Bekle (${cooldown}s)` : "Besle (Mini Oyun)"}</span>
             </button>
             <button
               onClick={() => setGameState('playing_play')}
               disabled={isActionLoading || cooldown > 0}
-              className="w-48 py-4 flex items-center justify-center gap-3 bg-cyan-900/60 border border-cyan-500 text-cyan-200 text-lg font-bold rounded-2xl shadow-xl hover:bg-cyan-800/80 hover:border-cyan-400 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
+              className="w-64 flex items-center justify-center gap-x-3 px-4 py-4 font-bold text-white bg-blue-500 rounded-xl shadow-lg transform transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <FaGamepad className="text-2xl" />
-              {cooldown > 0 ? `Bekle (${cooldown}s)` : "Oyna (Ritim Oyunu)"}
+              <FaGamepad className="text-xl" />
+              <span>{cooldown > 0 ? `Bekle (${cooldown}s)` : "Oyna (Ritim Oyunu)"}</span>
             </button>
           </>
         )}
-        {error && <div className="text-red-400 text-center mt-4 bg-red-900/50 p-3 rounded-lg w-48">{error}</div>}
+        {error && <div className="text-red-400 text-center mt-4 bg-red-900/50 p-3 rounded-lg w-64">{error}</div>}
       </div>
     </div>
   );
