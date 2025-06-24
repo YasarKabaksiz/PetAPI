@@ -88,6 +88,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<PetAPI.Interfaces.IPetService, PetAPI.Services.PetService>();
+builder.Services.AddScoped<PetAPI.Interfaces.IStoreService, PetAPI.Services.StoreService>();
 
 builder.Services.AddHostedService<PetAPI.BackgroundServices.PetStatsUpdaterService>();
 
