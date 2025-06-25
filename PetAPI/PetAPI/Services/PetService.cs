@@ -65,7 +65,8 @@ namespace PetAPI.Services
                 Experience = pet.Experience,
                 Hunger = pet.Hunger,
                 Happiness = pet.Happiness,
-                Health = pet.Health
+                Health = pet.Health,
+                Nickname = pet.Nickname
             };
         }
 
@@ -99,7 +100,8 @@ namespace PetAPI.Services
                 Experience = pet.Experience,
                 Hunger = pet.Hunger,
                 Happiness = pet.Happiness,
-                Health = pet.Health
+                Health = pet.Health,
+                Nickname = pet.Nickname
             };
         }
 
@@ -133,7 +135,8 @@ namespace PetAPI.Services
                 Experience = pet.Experience,
                 Hunger = pet.Hunger,
                 Happiness = pet.Happiness,
-                Health = pet.Health
+                Health = pet.Health,
+                Nickname = pet.Nickname
             };
         }
 
@@ -242,6 +245,16 @@ namespace PetAPI.Services
                 return null;
             pet.Name = petUpdateDto.Name;
             pet.Type = petUpdateDto.Type;
+            await _context.SaveChangesAsync();
+            return pet;
+        }
+
+        public async Task<Pet?> UpdatePetNicknameAsync(int userId, string nickname)
+        {
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
+            if (pet == null)
+                return null;
+            pet.Nickname = nickname;
             await _context.SaveChangesAsync();
             return pet;
         }

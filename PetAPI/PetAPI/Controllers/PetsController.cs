@@ -4,6 +4,7 @@ using PetAPI.Dtos;
 using PetAPI.Dtos.Pet;
 using PetAPI.Interfaces;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace PetAPI.Controllers
 {
@@ -52,7 +53,8 @@ namespace PetAPI.Controllers
                 Experience = pet.Experience,
                 Hunger = pet.Hunger,
                 Happiness = pet.Happiness,
-                Health = pet.Health
+                Health = pet.Health,
+                Nickname = pet.Nickname
             };
             return CreatedAtAction(nameof(CreatePet), new { id = pet.Id }, petDtoResult);
         }
@@ -109,7 +111,8 @@ namespace PetAPI.Controllers
                 Experience = pet.Experience,
                 Hunger = pet.Hunger,
                 Happiness = pet.Happiness,
-                Health = pet.Health
+                Health = pet.Health,
+                Nickname = pet.Nickname
             };
             return Ok(petDtoResult);
         }
@@ -153,7 +156,8 @@ namespace PetAPI.Controllers
                     Experience = pet.Experience,
                     Hunger = pet.Hunger,
                     Happiness = pet.Happiness,
-                    Health = pet.Health
+                    Health = pet.Health,
+                    Nickname = pet.Nickname
                 };
                 return Ok(petDto);
             }
@@ -200,9 +204,42 @@ namespace PetAPI.Controllers
                 Experience = updatedPet.Experience,
                 Hunger = updatedPet.Hunger,
                 Happiness = updatedPet.Happiness,
-                Health = updatedPet.Health
+                Health = updatedPet.Health,
+                Nickname = updatedPet.Nickname
             };
             return Ok(petDto);
+        }
+
+        /// <summary>
+        /// Kullanıcının pet'inin takma adını günceller
+        /// </summary>
+        /// <param name="dto">{"nickname": "yeni_takma_ad"}</param>
+        /// <returns>Güncellenmiş pet</returns>
+        [HttpPatch("mypet/nickname")]
+        public async Task<IActionResult> UpdatePetNickname([FromBody] PetNicknameUpdateDto dto)
+        {
+            var userId = GetCurrentUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            var updatedPet = await _petService.UpdatePetNicknameAsync(userId.Value, dto.Nickname);
+            if (updatedPet == null)
+            {
+                return NotFound("Pet bulunamadı.");
+            }
+            return Ok(updatedPet);
+        }
+
+        // YARDIMCI METOT
+        private int? GetCurrentUserId()
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (int.TryParse(userIdString, out var userId))
+            {
+                return userId;
+            }
+            return null;
         }
     }
 }

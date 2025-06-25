@@ -10,5 +10,6 @@ namespace PetAPI.Dtos.Pet
         public int Hunger { get; set; }
         public int Happiness { get; set; }
         public int Health { get; set; }
+        public string? Nickname { get; set; }
     }
 } 

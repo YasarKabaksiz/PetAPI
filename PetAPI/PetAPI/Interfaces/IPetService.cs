@@ -14,5 +14,6 @@ namespace PetAPI.Interfaces
         Task<Pet> SubmitMinigameResultAsync(int userId, SubmitMinigameResultDto resultDto);
         Task<Pet?> UseItemOnPetAsync(int userId, int itemId);
         Task<Pet?> UpdatePetAsync(int userId, PetUpdateDto petUpdateDto);
+        Task<Pet?> UpdatePetNicknameAsync(int userId, string nickname);
     }
 }

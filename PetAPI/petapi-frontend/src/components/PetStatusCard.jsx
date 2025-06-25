@@ -3,13 +3,17 @@ import React, { useState } from "react";
 import { IoIosHeart } from "react-icons/io"; 
 import { GiShinyApple } from "react-icons/gi";
 import { FaSmile, FaPencilAlt } from "react-icons/fa";
-import { updateMyPet } from "../services/petService";
+import { updateMyPet, updatePetNickname } from "../services/petService";
 
 function PetStatusCard({ pet, onPetUpdate }) {
   const [editOpen, setEditOpen] = useState(false);
   const [form, setForm] = useState({ name: pet?.name || "", type: pet?.type || "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [nicknameEditOpen, setNicknameEditOpen] = useState(false);
+  const [nicknameInput, setNicknameInput] = useState(pet?.nickname || "");
+  const [nicknameLoading, setNicknameLoading] = useState(false);
+  const [nicknameError, setNicknameError] = useState("");
 
   // pet objesi null veya undefined ise, boş bir ekran göstermek için bir kontrol ekleyelim.
   if (!pet) {
@@ -21,7 +25,7 @@ function PetStatusCard({ pet, onPetUpdate }) {
   }
 
   // Pet verilerini obje içinden alalım, bu kodu daha okunabilir kılar.
-  const { name, hunger, happiness, health, level, experience, type } = pet;
+  const { name, hunger, happiness, health, level, experience, type, nickname } = pet;
 
   const xpForNextLevel = level * 100;
   // Olası bir "bölme sıfıra" hatasını önlemek için kontrol
@@ -63,6 +67,11 @@ function PetStatusCard({ pet, onPetUpdate }) {
           </button>
         </div>
         <span className="bg-cyan-500 text-slate-900 font-bold px-3 py-1 rounded-full text-sm shadow">Seviye {level}</span>
+      </div>
+      {/* Nickname alanı ve butonu */}
+      <div className="mb-2 w-full text-center flex flex-col items-center gap-1">
+        {nickname && <span className="text-cyan-200 text-base italic">Takma Ad: {nickname}</span>}
+        <button onClick={() => { setNicknameEditOpen(true); setNicknameInput(nickname || ""); setNicknameError(""); }} className="text-xs text-cyan-400 hover:text-cyan-200 underline mt-1">{nickname ? "Takma Adı Değiştir" : "Takma Ad Ekle"}</button>
       </div>
       {/* Tür bilgisi */}
       <div className="mb-4 w-full text-center">
@@ -173,6 +182,43 @@ function PetStatusCard({ pet, onPetUpdate }) {
               <button type="button" onClick={() => setEditOpen(false)} className="flex-1 py-2 rounded bg-slate-600 text-slate-200 hover:bg-slate-700 transition-colors">İptal</button>
               <button type="submit" disabled={loading} className="flex-1 py-2 rounded bg-cyan-500 text-slate-900 font-bold hover:bg-cyan-400 transition-colors disabled:opacity-60">
                 {loading ? "Kaydediliyor..." : "Kaydet"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+      {/* Takma ad düzenleme popup */}
+      {nicknameEditOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            setNicknameLoading(true);
+            setNicknameError("");
+            try {
+              const updated = await updatePetNickname(nicknameInput);
+              setNicknameEditOpen(false);
+              if (onPetUpdate) onPetUpdate(updated);
+            } catch (err) {
+              setNicknameError(err.message || "Takma ad güncellenemedi");
+            } finally {
+              setNicknameLoading(false);
+            }
+          }} className="bg-slate-800 rounded-xl p-6 shadow-2xl w-full max-w-xs flex flex-col gap-4 border border-cyan-700">
+            <h3 className="text-lg font-bold text-cyan-300 mb-2">Takma Adı {nickname ? "Değiştir" : "Ekle"}</h3>
+            <input
+              type="text"
+              value={nicknameInput}
+              onChange={e => setNicknameInput(e.target.value)}
+              maxLength={20}
+              placeholder="Takma ad giriniz"
+              className="px-3 py-2 rounded bg-slate-700 text-cyan-200 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+              required
+            />
+            {nicknameError && <div className="text-red-400 text-sm">{nicknameError}</div>}
+            <div className="flex gap-2 mt-2">
+              <button type="button" onClick={() => setNicknameEditOpen(false)} className="flex-1 py-2 rounded bg-slate-600 text-slate-200 hover:bg-slate-700 transition-colors">İptal</button>
+              <button type="submit" disabled={nicknameLoading} className="flex-1 py-2 rounded bg-cyan-500 text-slate-900 font-bold hover:bg-cyan-400 transition-colors disabled:opacity-60">
+                {nicknameLoading ? "Kaydediliyor..." : "Kaydet"}
               </button>
             </div>
           </form>

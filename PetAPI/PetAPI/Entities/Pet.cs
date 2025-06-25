@@ -22,6 +22,8 @@ namespace PetAPI.Entities
         public int Level { get; set; } = 1;
         public int Experience { get; set; } = 0;
 
+        public string? Nickname { get; set; }
+
         // Foreign key
         [ForeignKey("User")]
         public int UserId { get; set; }

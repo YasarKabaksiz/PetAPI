@@ -136,4 +136,18 @@ export const updateMyPet = async (petData) => {
   } catch (error) {
     throw new Error(error.response?.data || 'Evcil hayvan güncellenirken bir hata oluştu');
   }
+};
+
+/**
+ * Pet'in takma adını günceller
+ * @param {string} nickname
+ * @returns {Promise<Object>} Güncellenmiş pet
+ */
+export const updatePetNickname = async (nickname) => {
+  try {
+    const response = await api.patch('/pets/mypet/nickname', { nickname });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data || 'Takma ad güncellenirken bir hata oluştu');
+  }
 }; 
