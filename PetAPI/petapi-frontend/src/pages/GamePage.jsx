@@ -39,7 +39,6 @@ function GamePage() {
         getMyPet(),
         getUserInventory()
       ]);
-      console.log("GELEN PET VERİSİ:", petData); // Debug için eklendi
       setPet(petData);
       setInventory(inventoryData);
     } catch (error) {

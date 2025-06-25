@@ -12,9 +12,8 @@ namespace PetAPI.Entities
         [Required]
         public int Price { get; set; }
         [Required]
-        public string ItemType { get; set; } // Örn: "Food", "Toy", "Cosmetic", "Decoration"
+        public string ItemType { get; set; } // Örn: "Food", "Toy", "Cosmetic"
         public int? EffectValue { get; set; } // Yiyecek için +kaç açlık, oyuncak için +kaç mutluluk
         public string ImageUrl { get; set; }
-        public string? PlacementArea { get; set; } // Dekorasyon için: "Wall", "Floor", "Background"
     }
 } 
