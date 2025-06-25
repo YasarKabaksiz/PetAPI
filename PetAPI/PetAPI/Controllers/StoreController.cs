@@ -46,5 +46,17 @@ namespace PetAPI.Controllers
             var inventory = await _storeService.GetUserInventoryAsync(userId);
             return Ok(inventory);
         }
+
+        [HttpDelete("inventory/{itemId}")]
+        public async Task<IActionResult> RemoveItemFromInventory(int itemId)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out int userId))
+                return Unauthorized();
+            var result = await _storeService.RemoveItemFromInventoryAsync(userId, itemId);
+            if (!result)
+                return NotFound();
+            return NoContent();
+        }
     }
 } 

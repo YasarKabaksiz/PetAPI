@@ -54,5 +54,22 @@ namespace PetAPI.Services
                 .ToListAsync();
             return inventory.Select(ui => new { item = ui.Item, quantity = ui.Quantity });
         }
+
+        public async Task<bool> RemoveItemFromInventoryAsync(int userId, int itemId)
+        {
+            var inventory = await _context.UserInventories.FirstOrDefaultAsync(ui => ui.UserId == userId && ui.ItemId == itemId);
+            if (inventory == null)
+                return false;
+            if (inventory.Quantity > 1)
+            {
+                inventory.Quantity -= 1;
+            }
+            else
+            {
+                _context.UserInventories.Remove(inventory);
+            }
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 } 
