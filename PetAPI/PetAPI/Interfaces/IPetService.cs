@@ -13,5 +13,6 @@ namespace PetAPI.Interfaces
         Task<IEnumerable<Pet>> GetLeaderboardAsync(PaginationParams paginationParams);
         Task<Pet> SubmitMinigameResultAsync(int userId, SubmitMinigameResultDto resultDto);
         Task<Pet?> UseItemOnPetAsync(int userId, int itemId);
+        Task<Pet?> UpdatePetAsync(int userId, PetUpdateDto petUpdateDto);
     }
 }

@@ -234,5 +234,16 @@ namespace PetAPI.Services
             await _context.SaveChangesAsync();
             return pet;
         }
+
+        public async Task<Pet?> UpdatePetAsync(int userId, PetUpdateDto petUpdateDto)
+        {
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
+            if (pet == null)
+                return null;
+            pet.Name = petUpdateDto.Name;
+            pet.Type = petUpdateDto.Type;
+            await _context.SaveChangesAsync();
+            return pet;
+        }
     }
 }

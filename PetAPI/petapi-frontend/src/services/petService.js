@@ -122,4 +122,18 @@ export const useItemOnPet = async (itemId) => {
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Eşya kullanılırken bir hata oluştu');
   }
+};
+
+/**
+ * Kullanıcının evcil hayvanını günceller
+ * @param {Object} petData - { name: string, type: string }
+ * @returns {Promise<Object>} Güncellenmiş evcil hayvan
+ */
+export const updateMyPet = async (petData) => {
+  try {
+    const response = await api.put('/pets/mypet', petData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data || 'Evcil hayvan güncellenirken bir hata oluştu');
+  }
 }; 

@@ -174,5 +174,35 @@ namespace PetAPI.Controllers
                 return StatusCode(500, new { message = "Beklenmedik bir hata oluştu. Lütfen tekrar deneyin." });
             }
         }
+
+        /// <summary>
+        /// Kullanıcının kendi evcil hayvanını günceller
+        /// </summary>
+        /// <param name="petUpdateDto">Güncellenecek bilgiler</param>
+        /// <returns>Güncellenmiş evcil hayvan</returns>
+        [HttpPut("mypet")]
+        public async Task<IActionResult> UpdateMyPet([FromBody] PetUpdateDto petUpdateDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) ?? User.FindFirst(System.Security.Claims.ClaimTypes.Name);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized("Kullanıcı kimliği bulunamadı.");
+            var updatedPet = await _petService.UpdatePetAsync(userId, petUpdateDto);
+            if (updatedPet == null)
+                return NotFound();
+            var petDto = new PetDto
+            {
+                Id = updatedPet.Id,
+                Name = updatedPet.Name,
+                Type = updatedPet.Type,
+                Level = updatedPet.Level,
+                Experience = updatedPet.Experience,
+                Hunger = updatedPet.Hunger,
+                Happiness = updatedPet.Happiness,
+                Health = updatedPet.Health
+            };
+            return Ok(petDto);
+        }
     }
 }

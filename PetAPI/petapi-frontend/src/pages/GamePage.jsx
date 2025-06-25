@@ -144,6 +144,20 @@ function GamePage() {
     }
   };
 
+  // Pet modelini type'a göre seçen yardımcı fonksiyon
+  const getModelForPetType = (type) => {
+    switch ((type || '').toLowerCase()) {
+      case 'kedi':
+        return 'cat.glb';
+      case 'köpek':
+        return 'dog.glb';
+      case 'kuş':
+        return 'bird.glb';
+      default:
+        return 'cat.glb';
+    }
+  };
+
   // --- RENDER LOGIC ---
   if (isLoading) {
     return <div className="flex justify-center items-center min-h-[70vh] text-2xl text-cyan-300">Evcil hayvan bilgileri yükleniyor...</div>;
@@ -160,6 +174,7 @@ function GamePage() {
   // XP ve Level bilgisi
   const xpForNextLevel = pet.level * 100;
   const isPetAlive = pet && pet.health > 0;
+  const modelToRender = isPetAlive ? getModelForPetType(pet.type) : 'headstone.glb';
 
   if (!isPetAlive) {
     return (
@@ -189,12 +204,12 @@ function GamePage() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center min-h-[calc(100vh-80px)] p-8 bg-gradient-to-br from-slate-900 to-slate-800">
       {/* Sol Sütun: Durum Kartı */}
       <div className="flex flex-col items-center justify-center">
-        <PetStatusCard pet={pet} />
+        <PetStatusCard pet={pet} onPetUpdate={setPet} />
       </div>
       {/* Orta Sütun: 3D Hologram ve Bilgiler */}
       <div className="flex flex-col items-center justify-center">
         <div className="h-96 w-full flex items-center justify-center">
-          <PetHologram petType={pet.type} effectType={hologramEffect.type} effectKey={hologramEffect.key} />
+          <PetHologram key={modelToRender} modelName={modelToRender} petType={pet.type} effectType={hologramEffect.type} effectKey={hologramEffect.key} />
         </div>
         <div className="mt-8 text-cyan-300 text-2xl font-bold text-shadow-glow text-center select-none">
           Seviye <span className="text-3xl text-cyan-400 drop-shadow">{pet.level}</span>
